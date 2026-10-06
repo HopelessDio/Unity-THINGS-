@@ -1797,6 +1797,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   enemyPrefab: {fileID: 6693353155803943453, guid: f13920c256c58b046a0515d879f71617, type: 3}
+  violetEnemyPrefab: {fileID: 6693353155803943453, guid: 9f245f98ae4340b9a6da2382edc63fbf, type: 3}
+  violetEnemyChance: 0.25
   player: {fileID: 1441974236}
   spawnInterval: 2
   spawnDistance: 8

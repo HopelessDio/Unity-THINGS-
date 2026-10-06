@@ -4,6 +4,8 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     public GameObject enemyPrefab;
+    public GameObject violetEnemyPrefab;
+    [Range(0f, 1f)] public float violetEnemyChance = 0.25f;
     public Transform player;
     public float spawnInterval = 2f;
     public float spawnDistance = 8f;
@@ -28,7 +30,11 @@ public class EnemySpawner : MonoBehaviour
         Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
         Vector2 spawnPosition = (Vector2)player.position + direction * spawnDistance;
 
-        GameObject enemyObject = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+        GameObject prefabToSpawn = enemyPrefab;
+        if (violetEnemyPrefab != null && Random.value < violetEnemyChance)
+            prefabToSpawn = violetEnemyPrefab;
+
+        GameObject enemyObject = Instantiate(prefabToSpawn, spawnPosition, Quaternion.identity);
 
         if (enemyObject.TryGetComponent(out EnemyFollow enemyFollow))
             enemyFollow.player = player;

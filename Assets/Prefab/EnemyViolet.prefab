@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2288293801320924461}
   - component: {fileID: 1232588528222906850}
   m_Layer: 0
-  m_Name: EnemyVisual
+  m_Name: VioletEnemyVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84,7 +84,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 4476393333072101386, guid: a06199dd7459bfe48b0283a1df4d24b2, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 3892245162464534720}
   - component: {fileID: -2015585660746675496}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: EnemyViolet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -222,7 +222,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 8876a7fdfa41ad24fa20fa27ddcbba18, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -259,8 +259,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 351669cf0df598e45a38692a9705f943, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHealth: 3
-  hitGlowColor: {r: 0.7019608, g: 0.69803923, b: 0.6862745, a: 1}
+  maxHealth: 6
+  hitGlowColor: {r: 1, g: 0, b: 1, a: 1}
   hitGlowDuration: 0.5
 --- !u!61 &224533270712401483
 BoxCollider2D:

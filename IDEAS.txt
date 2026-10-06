@@ -1,0 +1,12 @@
+﻿FUTURE GAME IDEAS
+
+- Add enemy waves that get harder over time.
+- Add a short survival goal and a win screen.
+- Add a few weapon upgrades for damage and fire rate.
+- Add hit and defeat sound effects.
+- Give the magenta enemy a special behavior, such as splitting into smaller creatures when defeated or speeding up after taking damage.
+- Let shots leave a temporary colored trail that slows or damages enemies.
+- Change the arena over time with shrinking safe areas, darkness, or activated hazards.
+- Give upgrades tradeoffs, such as faster shooting but slower movement.
+- Make the arena become more corrupted as survival time increases, changing its colors, music, and enemies.
+
