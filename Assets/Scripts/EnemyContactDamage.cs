@@ -15,12 +15,34 @@ public class EnemyContactDamage : MonoBehaviour
 
     void OnTriggerStay2D(Collider2D other)
     {
-        TryDamage(other.GetComponentInParent<PlayerHealth>());
+        PlayerHealth playerHealth = other.GetComponentInParent<PlayerHealth>();
+        if (playerHealth == null)
+            return;
+
+        attackAnimation?.SetTouchingPlayer(true);
+        TryDamage(playerHealth);
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.GetComponentInParent<PlayerHealth>() != null)
+            attackAnimation?.SetTouchingPlayer(false);
     }
 
     void OnCollisionStay2D(Collision2D collision)
     {
-        TryDamage(collision.gameObject.GetComponentInParent<PlayerHealth>());
+        PlayerHealth playerHealth = collision.gameObject.GetComponentInParent<PlayerHealth>();
+        if (playerHealth == null)
+            return;
+
+        attackAnimation?.SetTouchingPlayer(true);
+        TryDamage(playerHealth);
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.GetComponentInParent<PlayerHealth>() != null)
+            attackAnimation?.SetTouchingPlayer(false);
     }
 
     void TryDamage(PlayerHealth playerHealth)

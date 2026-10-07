@@ -200,6 +200,7 @@ public class RageVisuals : MonoBehaviour
         velocity.space = ParticleSystemSimulationSpace.World;
         velocity.x = new ParticleSystem.MinMaxCurve(-0.22f, 0.22f);
         velocity.y = new ParticleSystem.MinMaxCurve(0.45f, 1.05f);
+        velocity.z = new ParticleSystem.MinMaxCurve(0f, 0f);
 
         ParticleSystem.ColorOverLifetimeModule colorOverLifetime = emberParticles.colorOverLifetime;
         colorOverLifetime.enabled = true;

@@ -3,6 +3,7 @@ using UnityEngine;
 public class EnemyWalkAnimation : MonoBehaviour
 {
     public Transform visual;
+    public Sprite stoppedSprite;
     public float bobSpeed = 7f;
     public float bobHeight = 0.08f;
     public float swayAngle = 6f;
@@ -21,6 +22,10 @@ public class EnemyWalkAnimation : MonoBehaviour
     public float attackSquashAmount = 0.12f;
 
     private EnemyFollow enemyFollow;
+    private Animator animator;
+    private SpriteRenderer spriteRenderer;
+    private Sprite walkingSprite;
+    private Vector2 stoppedSpriteScale = Vector2.one;
     private Vector3 startingLocalPosition;
     private Vector3 startingLocalScale;
     private float animationOffset;
@@ -28,12 +33,26 @@ public class EnemyWalkAnimation : MonoBehaviour
     private Vector2 localHitDirection;
     private float attackTime;
     private Vector2 localAttackDirection;
+    private bool touchingPlayer;
 
     void Awake()
     {
         // This component lives on EnemyVisual, while EnemyFollow lives on the
         // parent Enemy object.
         enemyFollow = GetComponentInParent<EnemyFollow>();
+        animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+            walkingSprite = spriteRenderer.sprite;
+        if (walkingSprite != null && stoppedSprite != null)
+        {
+            Vector2 walkingSize = walkingSprite.bounds.size;
+            Vector2 stoppedSize = stoppedSprite.bounds.size;
+            // Keep the idle PNG's original proportions. Its square canvas is
+            // wider than the tall run frames, so match height with uniform scaling.
+            float uniformScale = walkingSize.y / stoppedSize.y;
+            stoppedSpriteScale = new Vector2(uniformScale, uniformScale);
+        }
         animationOffset = Random.Range(0f, Mathf.PI * 2f);
 
         if (visual != null)
@@ -48,7 +67,19 @@ public class EnemyWalkAnimation : MonoBehaviour
         if (visual == null)
             return;
 
-        float walkCycle = Mathf.Sin(Time.time * bobSpeed + animationOffset);
+        // Stop the walk bob and sway once the enemy reaches the player. The
+        // attack reaction below can still animate while the enemy is stopped.
+        bool hasReachedPlayer = touchingPlayer || (enemyFollow != null && enemyFollow.IsAtStoppingDistance);
+        if (animator != null)
+            animator.enabled = !hasReachedPlayer;
+        if (hasReachedPlayer && stoppedSprite != null && spriteRenderer != null)
+            spriteRenderer.sprite = stoppedSprite;
+        else if (spriteRenderer != null && spriteRenderer.sprite == stoppedSprite && walkingSprite != null)
+            spriteRenderer.sprite = walkingSprite;
+
+        float walkCycle = hasReachedPlayer
+            ? 0f
+            : Mathf.Sin(Time.time * bobSpeed + animationOffset);
         float step = Mathf.Abs(walkCycle);
         float hitStrength = hitReactionDuration > 0f
             ? Mathf.Clamp01(hitReactionTime / hitReactionDuration)
@@ -72,9 +103,11 @@ public class EnemyWalkAnimation : MonoBehaviour
             : attackStrength;
         Vector3 attackOffset = (Vector3)(localAttackDirection * attackLungeDistance * attackMotion);
         visual.localPosition = startingLocalPosition + Vector3.up * step * bobHeight + hitOffset + attackOffset;
+        Vector2 spriteScale = hasReachedPlayer ? stoppedSpriteScale : Vector2.one;
+        float attackSquash = hasReachedPlayer ? attackSquashAmount * 0.35f : attackSquashAmount;
         visual.localScale = new Vector3(
-            startingLocalScale.x * (1f + step * squashAmount + hitStrength * hitSquashAmount - attackStrength * attackSquashAmount),
-            startingLocalScale.y * (1f - step * squashAmount - hitStrength * hitSquashAmount + attackStrength * attackSquashAmount),
+            startingLocalScale.x * spriteScale.x * (1f + step * squashAmount + hitStrength * hitSquashAmount - attackStrength * attackSquash),
+            startingLocalScale.y * spriteScale.y * (1f - step * squashAmount - hitStrength * hitSquashAmount + attackStrength * attackSquash),
             startingLocalScale.z);
 
         float facingAngle = visual.eulerAngles.z;
@@ -114,5 +147,10 @@ public class EnemyWalkAnimation : MonoBehaviour
             localAttackDirection = visual.parent.InverseTransformVector(direction);
         else
             localAttackDirection = direction;
+    }
+
+    public void SetTouchingPlayer(bool isTouching)
+    {
+        touchingPlayer = isTouching;
     }
 }

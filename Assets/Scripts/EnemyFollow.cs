@@ -11,6 +11,19 @@ public class EnemyFollow : MonoBehaviour
     private Rigidbody2D body;
     private Vector2 knockbackVelocity;
 
+    public bool IsAtStoppingDistance
+    {
+        get
+        {
+            if (player == null)
+                return false;
+
+            Vector2 currentPosition = body != null ? body.position : (Vector2)transform.position;
+            Vector2 offsetToPlayer = (Vector2)player.position - currentPosition;
+            return offsetToPlayer.sqrMagnitude <= stoppingDistance * stoppingDistance;
+        }
+    }
+
     void Awake()
     {
         body = GetComponent<Rigidbody2D>();

@@ -107,6 +107,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWalkAnimation
   visual: {fileID: 5855654390372082217}
+  stoppedSprite: {fileID: 21300000, guid: 8876a7fdfa41ad24fa20fa27ddcbba18, type: 3}
   bobSpeed: 7
   bobHeight: 0
   swayAngle: 0
