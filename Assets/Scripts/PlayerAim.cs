@@ -21,8 +21,9 @@ public class PlayerAim : MonoBehaviour
         if (visual == null || mainCamera == null || Mouse.current == null)
             return;
 
-        Vector2 mousePosition = Mouse.current.position.ReadValue();
-        Vector2 mouseWorldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
+        if (!TryGetMouseWorldPosition(out Vector2 mouseWorldPosition))
+            return;
+
         Vector2 aimDirection = mouseWorldPosition - (Vector2)transform.position;
 
         if (aimDirection.sqrMagnitude < 0.001f)
@@ -35,5 +36,20 @@ public class PlayerAim : MonoBehaviour
         float smoothing = 1f - Mathf.Exp(-turnSpeed * Time.deltaTime);
 
         visual.rotation = Quaternion.Slerp(visual.rotation, targetRotation, smoothing);
+    }
+
+    bool TryGetMouseWorldPosition(out Vector2 worldPosition)
+    {
+        Ray mouseRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        Plane gameplayPlane = new Plane(Vector3.forward, transform.position);
+
+        if (gameplayPlane.Raycast(mouseRay, out float distance))
+        {
+            worldPosition = mouseRay.GetPoint(distance);
+            return true;
+        }
+
+        worldPosition = default;
+        return false;
     }
 }

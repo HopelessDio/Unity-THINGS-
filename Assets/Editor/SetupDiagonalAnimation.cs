@@ -36,7 +36,7 @@ public static class SetupDiagonalAnimation
         {
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Multiple;
-            importer.spritePixelsPerUnit = 768f;
+            importer.spritePixelsPerUnit = 710f;
             importer.alphaIsTransparency = true;
             importer.mipmapEnabled = false;
             importer.filterMode = FilterMode.Bilinear;
@@ -133,7 +133,7 @@ public static class SetupDiagonalAnimation
     {
         if (importer.textureType != TextureImporterType.Sprite ||
             importer.spriteImportMode != SpriteImportMode.Multiple ||
-            !Mathf.Approximately(importer.spritePixelsPerUnit, 768f) ||
+            !Mathf.Approximately(importer.spritePixelsPerUnit, 710f) ||
             importer.spritesheet.Length != expected.Length)
         {
             return true;

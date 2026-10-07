@@ -9,10 +9,25 @@ public class EnemyWalkAnimation : MonoBehaviour
     public float squashAmount = 0.05f;
     public float artworkAngleOffset = 90f;
 
+    [Header("Hit Reaction")]
+    public float hitReactionDuration = 0.16f;
+    public float hitPushDistance = 0.12f;
+    public float hitSquashAmount = 0.18f;
+    public float hitShakeAngle = 8f;
+
+    [Header("Attack Reaction")]
+    public float attackDuration = 0.28f;
+    public float attackLungeDistance = 0.2f;
+    public float attackSquashAmount = 0.12f;
+
     private EnemyFollow enemyFollow;
     private Vector3 startingLocalPosition;
     private Vector3 startingLocalScale;
     private float animationOffset;
+    private float hitReactionTime;
+    private Vector2 localHitDirection;
+    private float attackTime;
+    private Vector2 localAttackDirection;
 
     void Awake()
     {
@@ -35,20 +50,69 @@ public class EnemyWalkAnimation : MonoBehaviour
 
         float walkCycle = Mathf.Sin(Time.time * bobSpeed + animationOffset);
         float step = Mathf.Abs(walkCycle);
+        float hitStrength = hitReactionDuration > 0f
+            ? Mathf.Clamp01(hitReactionTime / hitReactionDuration)
+            : 0f;
+        float attackProgress = attackDuration > 0f
+            ? 1f - Mathf.Clamp01(attackTime / attackDuration)
+            : 1f;
+        float attackStrength = attackTime > 0f
+            ? Mathf.Sin(attackProgress * Mathf.PI)
+            : 0f;
 
-        visual.localPosition = startingLocalPosition + Vector3.up * step * bobHeight;
+        if (hitReactionTime > 0f)
+            hitReactionTime -= Time.deltaTime;
+        if (attackTime > 0f)
+            attackTime -= Time.deltaTime;
+
+        Vector3 hitOffset = (Vector3)(localHitDirection * hitPushDistance * hitStrength);
+        // The first half pulls back slightly, then the enemy lunges forward.
+        float attackMotion = attackProgress < 0.28f
+            ? -attackStrength * 0.3f
+            : attackStrength;
+        Vector3 attackOffset = (Vector3)(localAttackDirection * attackLungeDistance * attackMotion);
+        visual.localPosition = startingLocalPosition + Vector3.up * step * bobHeight + hitOffset + attackOffset;
         visual.localScale = new Vector3(
-            startingLocalScale.x * (1f + step * squashAmount),
-            startingLocalScale.y * (1f - step * squashAmount),
+            startingLocalScale.x * (1f + step * squashAmount + hitStrength * hitSquashAmount - attackStrength * attackSquashAmount),
+            startingLocalScale.y * (1f - step * squashAmount - hitStrength * hitSquashAmount + attackStrength * attackSquashAmount),
             startingLocalScale.z);
 
-        // A freshly spawned enemy receives its player target immediately after
-        // Awake, so safely wait if either reference is not ready yet.
-        if (enemyFollow == null || enemyFollow.player == null)
-            return;
+        float facingAngle = visual.eulerAngles.z;
+        if (enemyFollow != null && enemyFollow.player != null)
+        {
+            Vector2 direction = enemyFollow.player.position - transform.position;
+            facingAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + artworkAngleOffset;
+        }
 
-        Vector2 direction = enemyFollow.player.position - transform.position;
-        float facingAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + artworkAngleOffset;
-        visual.rotation = Quaternion.Euler(0f, 0f, facingAngle + walkCycle * swayAngle);
+        float hitShake = Mathf.Sin(Time.time * 90f) * hitShakeAngle * hitStrength;
+        visual.rotation = Quaternion.Euler(0f, 0f, facingAngle + walkCycle * swayAngle + hitShake);
+    }
+
+    public void PlayHitReaction(Vector2 worldHitDirection)
+    {
+        hitReactionTime = hitReactionDuration;
+
+        Vector2 direction = worldHitDirection.sqrMagnitude > 0.001f
+            ? worldHitDirection.normalized
+            : Vector2.up;
+
+        if (visual != null && visual.parent != null)
+            localHitDirection = visual.parent.InverseTransformVector(direction);
+        else
+            localHitDirection = direction;
+    }
+
+    public void PlayAttackAnimation()
+    {
+        attackTime = attackDuration;
+
+        Vector2 direction = Vector2.up;
+        if (enemyFollow != null && enemyFollow.player != null)
+            direction = ((Vector2)enemyFollow.player.position - (Vector2)transform.position).normalized;
+
+        if (visual != null && visual.parent != null)
+            localAttackDirection = visual.parent.InverseTransformVector(direction);
+        else
+            localAttackDirection = direction;
     }
 }

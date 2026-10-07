@@ -1,25 +1,31 @@
 fileFormatVersion: 2
-guid: 8876a7fdfa41ad24fa20fa27ddcbba18
+guid: 5b2279f16cc0c584bb7adfd765b8aafb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3265486473016017415
-    second: EnemyMutant_0
+      213: 2265496995945803857
+    second: PlayerRageIdle_0
   - first:
-      213: 1484553815458243919
-    second: EnemyMutant_1
+      213: -3634892413781294364
+    second: PlayerRageIdle_1
   - first:
-      213: -1882367846901553325
-    second: EnemyMutant_2
+      213: 2709355115346544754
+    second: PlayerRageIdle_2
   - first:
-      213: 1469262610761809925
-    second: EnemyMutant_3
+      213: 851525250815214737
+    second: PlayerRageIdle_3
   - first:
-      213: -7523350612058425697
-    second: EnemyMutant_4
+      213: 6257634333388001213
+    second: PlayerRageIdle_4
   - first:
-      213: -9209098509856428846
-    second: EnemyMutant_5
+      213: -6401250532042247882
+    second: PlayerRageIdle_5
+  - first:
+      213: 3721679488245840446
+    second: PlayerRageIdle_6
+  - first:
+      213: 8294397535047487475
+    second: PlayerRageIdle_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -64,9 +70,9 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
-  spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 768
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.1}
+  spritePixelsToUnits: 1000
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -130,133 +136,177 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: EnemyMutant_0
+      name: PlayerRageIdle_0
       rect:
         serializedVersion: 2
         x: 16
-        y: 27
-        width: 1215
-        height: 1207
+        y: 0
+        width: 1203
+        height: 1234
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9fd7905aa59aea2d0800000000000000
-      internalID: -3265486473016017415
+      spriteID: 1507013c389a07f10800000000000000
+      internalID: 2265496995945803857
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: EnemyMutant_1
+      name: PlayerRageIdle_1
       rect:
         serializedVersion: 2
-        x: 1165
-        y: 773
-        width: 62
-        height: 163
+        x: 661
+        y: 1194
+        width: 17
+        height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f45e65464d13a9410800000000000000
-      internalID: 1484553815458243919
+      spriteID: 4e2cdcfab944e8dc0800000000000000
+      internalID: -3634892413781294364
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: EnemyMutant_2
+      name: PlayerRageIdle_2
       rect:
         serializedVersion: 2
-        x: 104
-        y: 596
+        x: 733
+        y: 1134
         width: 6
         height: 6
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 357e0dc9a6c70e5e0800000000000000
-      internalID: -1882367846901553325
+      spriteID: 2784e946f10999520800000000000000
+      internalID: 2709355115346544754
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: EnemyMutant_3
+      name: PlayerRageIdle_3
       rect:
         serializedVersion: 2
-        x: 1212
-        y: 497
-        width: 11
-        height: 12
+        x: 88
+        y: 168
+        width: 6
+        height: 7
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 500883c5f8ed36410800000000000000
-      internalID: 1469262610761809925
+      spriteID: 194cd1c34b931db00800000000000000
+      internalID: 851525250815214737
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: EnemyMutant_4
-      rect:
-        serializedVersion: 2
-        x: 30
-        y: 471
-        width: 9
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f963a8f8a70b79790800000000000000
-      internalID: -7523350612058425697
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: EnemyMutant_5
+      name: PlayerRageIdle_4
       rect:
         serializedVersion: 2
         x: 96
         y: 71
-        width: 14
-        height: 11
+        width: 12
+        height: 9
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2dcad6a72b5b23080800000000000000
-      internalID: -9209098509856428846
+      spriteID: dbf41e7954597d650800000000000000
+      internalID: 6257634333388001213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRageIdle_5
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 31
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 631775f6e803a27a0800000000000000
+      internalID: -6401250532042247882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRageIdle_6
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 33
+        width: 12
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3a30c8b6cf06a330800000000000000
+      internalID: 3721679488245840446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRageIdle_7
+      rect:
+        serializedVersion: 2
+        x: 397
+        y: 47
+        width: 38
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ff816ecc9e9b1370800000000000000
+      internalID: 8294397535047487475
       vertices: []
       indices: 
       edges: []
@@ -266,7 +316,7 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 0
+    internalID: 1537655665
     vertices: []
     indices: 
     edges: []
@@ -275,12 +325,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      EnemyMutant_0: -3265486473016017415
-      EnemyMutant_1: 1484553815458243919
-      EnemyMutant_2: -1882367846901553325
-      EnemyMutant_3: 1469262610761809925
-      EnemyMutant_4: -7523350612058425697
-      EnemyMutant_5: -9209098509856428846
+      PlayerRageIdle_0: 2265496995945803857
+      PlayerRageIdle_1: -3634892413781294364
+      PlayerRageIdle_2: 2709355115346544754
+      PlayerRageIdle_3: 851525250815214737
+      PlayerRageIdle_4: 6257634333388001213
+      PlayerRageIdle_5: -6401250532042247882
+      PlayerRageIdle_6: 3721679488245840446
+      PlayerRageIdle_7: 8294397535047487475
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

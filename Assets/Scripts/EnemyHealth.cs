@@ -1,8 +1,12 @@
 using System.Collections;
+using System;
 using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
+    public static event Action<int> EnemyDamaged;
+    public static event Action EnemyDefeated;
+
     public int maxHealth = 3;
     public Color hitGlowColor = new Color(1f, 0.78f, 0.48f);
     public float hitGlowDuration = 0.12f;
@@ -13,10 +17,12 @@ public class EnemyHealth : MonoBehaviour
     private SpriteRenderer glowRenderer;
     private Color originalColor;
     private Coroutine hitGlowRoutine;
+    private EnemyWalkAnimation walkAnimation;
 
     void Awake()
     {
         currentHealth = maxHealth;
+        walkAnimation = GetComponentInChildren<EnemyWalkAnimation>();
         SpriteRenderer[] spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
         foreach (SpriteRenderer candidate in spriteRenderers)
         {
@@ -36,10 +42,22 @@ public class EnemyHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        TakeDamage(damage, Vector2.zero);
+    }
+
+    public void TakeDamage(int damage, Vector2 hitDirection)
+    {
         if (isDead)
             return;
 
-        currentHealth -= damage;
+        int previousHealth = currentHealth;
+        currentHealth = Mathf.Max(currentHealth - damage, 0);
+        int damageDealt = previousHealth - currentHealth;
+
+        if (damageDealt > 0)
+            EnemyDamaged?.Invoke(damageDealt);
+
+        walkAnimation?.PlayHitReaction(hitDirection);
         if (spriteRenderer != null)
         {
             if (hitGlowRoutine != null)
@@ -51,6 +69,7 @@ public class EnemyHealth : MonoBehaviour
         if (currentHealth <= 0)
         {
             isDead = true;
+            EnemyDefeated?.Invoke();
             GameHUD.Instance?.AddKill();
             Destroy(gameObject);
         }

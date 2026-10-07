@@ -9,6 +9,7 @@ public class PlayerRunController : MonoBehaviour
     public PlayerAim playerAim;
 
     private int currentAnimation;
+    private bool externalAnimationLocked;
     private static readonly int RunAnimation = Animator.StringToHash("PlayerRun");
     private static readonly int StrafeAnimation = Animator.StringToHash("PlayerStrafe");
     private static readonly int DiagonalAnimation = Animator.StringToHash("PlayerDiagonal");
@@ -21,6 +22,9 @@ public class PlayerRunController : MonoBehaviour
 
     void Update()
     {
+        if (externalAnimationLocked)
+            return;
+
         if (Keyboard.current == null)
             return;
 
@@ -75,5 +79,16 @@ public class PlayerRunController : MonoBehaviour
         }
 
         spriteRenderer.flipX = (isStrafing || isDiagonal) && sidewaysMovement < 0f;
+    }
+
+    public void SetExternalAnimationLock(bool locked)
+    {
+        externalAnimationLocked = locked;
+        currentAnimation = 0;
+
+        if (locked)
+            animator.enabled = true;
+        else
+            animator.speed = 1f;
     }
 }

@@ -1,25 +1,43 @@
 fileFormatVersion: 2
-guid: 8876a7fdfa41ad24fa20fa27ddcbba18
+guid: e7721185eb3cf1549bd0ec82b9c34ece
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3265486473016017415
-    second: EnemyMutant_0
+      213: -6982586205695804639
+    second: PlayerRageSwordSheetV2_0
   - first:
-      213: 1484553815458243919
-    second: EnemyMutant_1
+      213: -9088810916342807727
+    second: PlayerRageSwordSheetV2_1
   - first:
-      213: -1882367846901553325
-    second: EnemyMutant_2
+      213: -6546033433231510314
+    second: PlayerRageSwordSheetV2_2
   - first:
-      213: 1469262610761809925
-    second: EnemyMutant_3
+      213: 1080987816986667053
+    second: PlayerRageSwordSheetV2_3
   - first:
-      213: -7523350612058425697
-    second: EnemyMutant_4
+      213: -7299248887619780545
+    second: PlayerRageSwordSheetV2_4
   - first:
-      213: -9209098509856428846
-    second: EnemyMutant_5
+      213: -850734197117951337
+    second: PlayerRageSwordSheetV2_5
+  - first:
+      213: -6678049142037019575
+    second: PlayerRageSwordSheet_0
+  - first:
+      213: -2231864906808095922
+    second: PlayerRageSwordSheet_1
+  - first:
+      213: -5755759477165618179
+    second: PlayerRageSwordSheet_2
+  - first:
+      213: 201122433295920983
+    second: PlayerRageSwordSheet_3
+  - first:
+      213: -6217767982469394550
+    second: PlayerRageSwordSheet_4
+  - first:
+      213: -5009176765622233244
+    second: PlayerRageSwordSheet_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -61,12 +79,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 768
+  spritePixelsToUnits: 450
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -130,133 +148,199 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: EnemyMutant_0
+      name: PlayerRageSwordSheet_0
       rect:
         serializedVersion: 2
-        x: 16
-        y: 27
-        width: 1215
-        height: 1207
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 362
+        height: 724
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9fd7905aa59aea2d0800000000000000
-      internalID: -3265486473016017415
+      spriteID: 9440848efadc253a0800000000000000
+      internalID: -6678049142037019575
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: EnemyMutant_1
+      name: PlayerRageSwordSheet_1
       rect:
         serializedVersion: 2
-        x: 1165
-        y: 773
-        width: 62
-        height: 163
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 362
+        y: 0
+        width: 362
+        height: 724
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f45e65464d13a9410800000000000000
-      internalID: 1484553815458243919
+      spriteID: e4b0b0331b2d601e0800000000000000
+      internalID: -2231864906808095922
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: EnemyMutant_2
+      name: PlayerRageSwordSheet_2
       rect:
         serializedVersion: 2
-        x: 104
-        y: 596
-        width: 6
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 724
+        y: 0
+        width: 362
+        height: 724
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 357e0dc9a6c70e5e0800000000000000
-      internalID: -1882367846901553325
+      spriteID: dfb84f6304f6f10b0800000000000000
+      internalID: -5755759477165618179
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: EnemyMutant_3
+      name: PlayerRageSwordSheet_3
       rect:
         serializedVersion: 2
-        x: 1212
-        y: 497
-        width: 11
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1091
+        y: 0
+        width: 362
+        height: 724
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 500883c5f8ed36410800000000000000
-      internalID: 1469262610761809925
+      spriteID: 75f27f899c78ac200800000000000000
+      internalID: 201122433295920983
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: EnemyMutant_4
+      name: PlayerRageSwordSheet_4
       rect:
         serializedVersion: 2
-        x: 30
-        y: 471
-        width: 9
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1443
+        y: 0
+        width: 362
+        height: 724
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f963a8f8a70b79790800000000000000
-      internalID: -7523350612058425697
+      spriteID: a8f4d1d86fc06b9a0800000000000000
+      internalID: -6217767982469394550
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: EnemyMutant_5
+      name: PlayerRageSwordSheet_5
       rect:
         serializedVersion: 2
-        x: 96
-        y: 71
-        width: 14
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1810
+        y: 0
+        width: 362
+        height: 724
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2dcad6a72b5b23080800000000000000
-      internalID: -9209098509856428846
+      spriteID: 46752fb7544db7ab0800000000000000
+      internalID: -5009176765622233244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRageSwordSheetV2_0
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 0
+        width: 1614
+        height: 724
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 407e3aa97decd1c4f95fcde500a62076
+      internalID: -6982586205695804639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRageSwordSheetV2_1
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 0
+        width: 1884
+        height: 690
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb30b7c677613f94184947dc335c6c5f
+      internalID: -9088810916342807727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerRageSwordSheetV2_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 2172
+        height: 724
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 588edad690544904291a6586fcb627a5
+      internalID: -6546033433231510314
       vertices: []
       indices: 
       edges: []
@@ -265,7 +349,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 4a9173add4e7c424db48aa960490049c
     internalID: 0
     vertices: []
     indices: 
@@ -275,12 +359,18 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      EnemyMutant_0: -3265486473016017415
-      EnemyMutant_1: 1484553815458243919
-      EnemyMutant_2: -1882367846901553325
-      EnemyMutant_3: 1469262610761809925
-      EnemyMutant_4: -7523350612058425697
-      EnemyMutant_5: -9209098509856428846
+      PlayerRageSwordSheetV2_0: -6982586205695804639
+      PlayerRageSwordSheetV2_1: -9088810916342807727
+      PlayerRageSwordSheetV2_2: -6546033433231510314
+      PlayerRageSwordSheetV2_3: 1080987816986667053
+      PlayerRageSwordSheetV2_4: -7299248887619780545
+      PlayerRageSwordSheetV2_5: -850734197117951337
+      PlayerRageSwordSheet_0: -6678049142037019575
+      PlayerRageSwordSheet_1: -2231864906808095922
+      PlayerRageSwordSheet_2: -5755759477165618179
+      PlayerRageSwordSheet_3: 201122433295920983
+      PlayerRageSwordSheet_4: -6217767982469394550
+      PlayerRageSwordSheet_5: -5009176765622233244
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

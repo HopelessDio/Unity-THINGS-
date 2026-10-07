@@ -5,21 +5,55 @@ public class EnemyFollow : MonoBehaviour
     public float moveSpeed = 2f;
     [Tooltip("How close the enemy can get to the player, in world units.")]
     public float stoppingDistance = 0.9f;
+    public float knockbackRecovery = 14f;
     public Transform player;
 
-    void Update()
+    private Rigidbody2D body;
+    private Vector2 knockbackVelocity;
+
+    void Awake()
+    {
+        body = GetComponent<Rigidbody2D>();
+        if (body != null)
+        {
+            body.gravityScale = 0f;
+            body.freezeRotation = true;
+            body.interpolation = RigidbodyInterpolation2D.Interpolate;
+            body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        }
+    }
+
+    void FixedUpdate()
     {
         if (player == null)
             return;
 
-        Vector2 direction = player.position - transform.position;
+        Vector2 currentPosition = body != null ? body.position : (Vector2)transform.position;
+        Vector2 direction = (Vector2)player.position - currentPosition;
         float distance = direction.magnitude;
 
-        // Keep the enemy at the edge of the player's space. Its trigger collider
-        // still overlaps the player there, so EnemyContactDamage can keep firing.
-        if (distance <= stoppingDistance)
+        Vector2 movementVelocity = Vector2.zero;
+        if (distance > stoppingDistance)
+            movementVelocity = direction / distance * moveSpeed;
+
+        Vector2 nextPosition = currentPosition +
+            (movementVelocity + knockbackVelocity) * Time.fixedDeltaTime;
+        if (body != null)
+            body.MovePosition(nextPosition);
+        else
+            transform.position = nextPosition;
+
+        knockbackVelocity = Vector2.MoveTowards(
+            knockbackVelocity,
+            Vector2.zero,
+            knockbackRecovery * Time.fixedDeltaTime);
+    }
+
+    public void ApplyKnockback(Vector2 direction, float force)
+    {
+        if (direction.sqrMagnitude < 0.001f || force <= 0f)
             return;
 
-        transform.Translate(direction / distance * moveSpeed * Time.deltaTime);
+        knockbackVelocity += direction.normalized * force;
     }
 }
