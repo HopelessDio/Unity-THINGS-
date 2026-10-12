@@ -17,7 +17,12 @@ public class GameHUD : MonoBehaviour
         if (FindAnyObjectByType<GameHUD>() != null)
             return;
 
-        GameObject hudObject = new GameObject("Game HUD");
+        GameObject hudObject = new GameObject("Game HUD", typeof(RectTransform));
+        Canvas canvas = hudObject.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 100;
+        hudObject.AddComponent<CanvasScaler>();
+        hudObject.AddComponent<GraphicRaycaster>();
         hudObject.AddComponent<GameHUD>();
     }
 
@@ -72,11 +77,17 @@ public class GameHUD : MonoBehaviour
         Canvas canvas = GetComponent<Canvas>();
         if (canvas == null)
         {
-            canvas = gameObject.AddComponent<Canvas>();
+            GameObject canvasObject = new GameObject(
+                "HUD Canvas",
+                typeof(RectTransform),
+                typeof(Canvas),
+                typeof(CanvasScaler),
+                typeof(GraphicRaycaster));
+            canvasObject.transform.SetParent(transform, false);
+
+            canvas = canvasObject.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 100;
-            gameObject.AddComponent<CanvasScaler>();
-            gameObject.AddComponent<GraphicRaycaster>();
         }
 
         GameObject textObject = new GameObject(
