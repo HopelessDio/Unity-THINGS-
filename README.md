@@ -2,6 +2,11 @@
 
 Crimson Arena is an original isometric 3D arena shooter built with Unity 6 and the Universal Render Pipeline. Its direction is inspired by the speed, pressure, and dark retro-futuristic presentation of games such as KILL KNIGHT while using original gameplay code, assets, names, and arena designs.
 
+Websites for asset and models
+unity story for map assets
+sketchfab for 3d models use 3d ripper pro to get the 3d models
+unityassetpack.com for unity asset store stuff
+
 ## Current prototype
 
 - Independent WASD movement and mouse aiming
@@ -107,4 +112,3 @@ The arena will use modular 3D prefabs rather than a Tilemap.
 ## Current next step
 
 Add a visible dash cooldown indicator, then begin the modular arena and gameplay-boundary pass.
-
