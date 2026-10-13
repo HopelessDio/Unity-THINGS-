@@ -57,6 +57,18 @@ namespace Survivor.Player
             }
         }
 
+        public void Kill()
+        {
+            if (IsDead)
+            {
+                return;
+            }
+
+            CurrentHealth = 0f;
+            HealthChanged?.Invoke(CurrentHealth, maxHealth);
+            Die();
+        }
+
         private void Die()
         {
             IsDead = true;

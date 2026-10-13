@@ -72,7 +72,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: ca8b7f0475692e04a92d642614592efa, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -162,6 +162,12 @@ MonoBehaviour:
   moveSpeed: 3
   rotationSpeed: 10
   stoppingDistance: 1
+  obstacleLayers:
+    serializedVersion: 2
+    m_Bits: 72
+  obstacleCheckDistance: 2.5
+  avoidanceAngle: 55
+  turnCommitmentTime: 0.6
 --- !u!114 &8770158568050954751
 MonoBehaviour:
   m_ObjectHideFlags: 0

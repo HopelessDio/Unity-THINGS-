@@ -11,6 +11,7 @@ namespace Survivor.Combat
         [SerializeField, Min(0.1f)] private float lifetime = 3f;
         [SerializeField, Min(0f)] private float knockbackSpeed = 8f;
         [SerializeField, Min(0f)] private float knockbackDuration = 0.15f;
+        [SerializeField] private LayerMask blockingLayers;
 
         private Rigidbody body;
         private Vector3 direction;
@@ -44,6 +45,12 @@ namespace Survivor.Combat
         {
             if (!other.TryGetComponent(out EnemyHealth enemyHealth))
             {
+                bool hitBlockingLayer = (blockingLayers.value & (1 << other.gameObject.layer)) != 0;
+                if (hitBlockingLayer)
+                {
+                    Destroy(gameObject);
+                }
+
                 return;
             }
 

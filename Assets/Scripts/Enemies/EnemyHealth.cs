@@ -35,10 +35,31 @@ namespace Survivor.Enemies
 
             if (currentHealth <= 0f)
             {
-                IsDead = true;
-                EnemyKilled?.Invoke();
-                Destroy(gameObject);
+                Die(true);
             }
+        }
+
+        public void KillWithoutScore()
+        {
+            Die(false);
+        }
+
+        private void Die(bool awardScore)
+        {
+            if (IsDead)
+            {
+                return;
+            }
+
+            IsDead = true;
+            currentHealth = 0f;
+
+            if (awardScore)
+            {
+                EnemyKilled?.Invoke();
+            }
+
+            Destroy(gameObject);
         }
     }
 }

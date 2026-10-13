@@ -7,6 +7,7 @@ namespace Survivor.Enemies
         [Header("References")]
         [SerializeField] private EnemyChaser enemyPrefab;
         [SerializeField] private Transform playerTarget;
+        [SerializeField] private ArenaSpawnArea spawnArea;
 
         [Header("Timing")]
         [SerializeField, Min(0.1f)] private float spawnInterval = 2f;
@@ -60,18 +61,21 @@ namespace Survivor.Enemies
 
         private void SpawnEnemy(float elapsedMinutes)
         {
-            Vector2 circleDirection = Random.insideUnitCircle.normalized;
-            if (circleDirection.sqrMagnitude < 0.01f)
+            if (spawnArea == null)
             {
-                circleDirection = Vector2.right;
+                Debug.LogError("Enemy Spawner needs an Arena Spawn Area reference.", this);
+                enabled = false;
+                return;
             }
 
-            float minimumDistance = Mathf.Min(minimumSpawnDistance, maximumSpawnDistance);
-            float maximumDistance = Mathf.Max(minimumSpawnDistance, maximumSpawnDistance);
-            float distance = Random.Range(minimumDistance, maximumDistance);
-
-            Vector3 spawnDirection = new Vector3(circleDirection.x, 0f, circleDirection.y);
-            Vector3 spawnPosition = playerTarget.position + spawnDirection * distance;
+            if (!spawnArea.TryGetPointInRing(
+                    playerTarget.position,
+                    minimumSpawnDistance,
+                    maximumSpawnDistance,
+                    out Vector3 spawnPosition))
+            {
+                return;
+            }
 
             EnemyChaser enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
             enemy.SetTarget(playerTarget);

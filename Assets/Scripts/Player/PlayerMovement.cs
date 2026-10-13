@@ -9,6 +9,20 @@ namespace Survivor.Player
     {
         public event Action<float> DashStarted;
 
+        public float DashCooldownProgress
+        {
+            get
+            {
+                if (Time.time >= nextDashTime)
+                {
+                    return 1f;
+                }
+
+                float timeRemaining = nextDashTime - Time.time;
+                return 1f - Mathf.Clamp01(timeRemaining / dashCooldown);
+            }
+        }
+
         [Header("Movement")]
         [SerializeField, Min(0f)] private float moveSpeed = 6f;
 
@@ -95,7 +109,6 @@ namespace Survivor.Player
                 movement.x * moveSpeed,
                 currentVelocity.y,
                 movement.z * moveSpeed);
-
         }
 
         private void StartDash()
