@@ -1,67 +1,65 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 
 namespace Survivor.Player
 {
-    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(Rigidbody), typeof(PlayerMovement))]
     public sealed class PlayerAim : MonoBehaviour
     {
-        [SerializeField] private Camera aimCamera;
-        [SerializeField, Min(0f)] private float rotationSpeed = 18f;
-
+        [SerializeField, Min(.01f)] private float turnSmoothTime = .09f;
+        [SerializeField, Min(1f)] private float maxTurnSpeed = 1080f;
         private Rigidbody body;
-        private Vector3 aimDirection = Vector3.forward;
+        private PlayerMovement movement;
+        private Quaternion desiredFacing;
+        private float angularVelocity;
+        private Survivor.Combat.PlayerSwordAttack sword;
 
         private void Awake()
         {
             body = GetComponent<Rigidbody>();
 
-            if (aimCamera == null)
-            {
-                aimCamera = Camera.main;
-            }
+            movement = GetComponent<PlayerMovement>();
+            desiredFacing = body.rotation;
         }
 
-        private void Update()
+        private void OnEnable()
         {
-            if (aimCamera == null || Mouse.current == null)
-            {
-                return;
-            }
-
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            {
-                return;
-            }
-
-            Ray pointerRay = aimCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
-
-            if (!groundPlane.Raycast(pointerRay, out float enter))
-            {
-                return;
-            }
-
-            Vector3 pointerPosition = pointerRay.GetPoint(enter);
-            Vector3 direction = pointerPosition - body.position;
-            direction.y = 0f;
-
-            if (direction.sqrMagnitude > 0.001f)
-            {
-                aimDirection = direction.normalized;
-            }
+            if (body != null) desiredFacing = body.rotation;
+            angularVelocity = 0f;
         }
 
         private void FixedUpdate()
         {
-            Quaternion targetRotation = Quaternion.LookRotation(aimDirection, Vector3.up);
-            Quaternion nextRotation = Quaternion.Slerp(
-                body.rotation,
-                targetRotation,
-                rotationSpeed * Time.fixedDeltaTime);
+            if (movement == null || !movement.enabled) return;
+            if (sword == null) sword = GetComponentInChildren<Survivor.Combat.PlayerSwordAttack>();
+            bool attackTurning = sword != null && sword.IsFacingLocked && !movement.IsDashing;
+            Vector3 direction = attackTurning
+                ? sword.AttackDirection : movement.FacingDirection;
+            if (TryGetFacingRotation(direction, out Quaternion rotation))
+                desiredFacing = rotation;
+            // Complete the last requested turn even when the keys are released.
+            body.MoveRotation(SmoothFacing(body.rotation, desiredFacing,
+                ref angularVelocity, attackTurning ? turnSmoothTime * .5f : turnSmoothTime,
+                attackTurning ? maxTurnSpeed * 2f : maxTurnSpeed, Time.fixedDeltaTime));
+        }
 
-            body.MoveRotation(nextRotation);
+        public static Quaternion SmoothFacing(Quaternion current, Quaternion target,
+            ref float velocity, float smoothTime, float maxSpeed, float deltaTime)
+        {
+            float yaw = Mathf.SmoothDampAngle(current.eulerAngles.y, target.eulerAngles.y,
+                ref velocity, smoothTime, maxSpeed, deltaTime);
+            return Quaternion.Euler(0f, yaw, 0f);
+        }
+
+        public static bool TryGetFacingRotation(Vector3 direction, out Quaternion rotation)
+        {
+            direction.y = 0f;
+            if (direction.sqrMagnitude < .001f)
+            {
+                rotation = Quaternion.identity;
+                return false;
+            }
+            rotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+            return true;
         }
     }
 }

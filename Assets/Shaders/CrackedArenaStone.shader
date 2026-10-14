@@ -5,6 +5,8 @@ Shader "Survivor/CrackedArenaStone"
         _BaseColor ("Stone Color", Color) = (0.2, 0.22, 0.26, 1)
         _VariationColor ("Stone Variation", Color) = (0.34, 0.36, 0.4, 1)
         _CrackColor ("Crack Color", Color) = (0.012, 0.014, 0.02, 1)
+        _CrackGlowColor ("Crack Heat Color", Color) = (1, 0.12, 0.01, 1)
+        _CrackGlow ("Crack Heat", Range(0, 2)) = 0.08
         _Scale ("Stone Cell Scale", Range(0.05, 2)) = 0.3
         _CrackWidth ("Crack Width", Range(0.005, 0.2)) = 0.045
         _Roughness ("Roughness", Range(0, 1)) = 0.82
@@ -27,6 +29,7 @@ Shader "Survivor/CrackedArenaStone"
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile_fog
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
@@ -48,6 +51,8 @@ Shader "Survivor/CrackedArenaStone"
                 float4 _BaseColor;
                 float4 _VariationColor;
                 float4 _CrackColor;
+                float4 _CrackGlowColor;
+                float _CrackGlow;
                 float _Scale;
                 float _CrackWidth;
                 float _Roughness;
@@ -136,7 +141,13 @@ Shader "Survivor/CrackedArenaStone"
                 }
                 #endif
 
-                return half4(albedo * illumination, 1.0);
+                // A very restrained warm rim inside the deepest cracks reflects the
+                // lava below without turning the whole combat floor into a hazard.
+                float deepCrack = smoothstep(0.58, 0.96, crack);
+                float3 finalColor = albedo * illumination;
+                finalColor += _CrackGlowColor.rgb * deepCrack * _CrackGlow;
+                finalColor = MixFog(finalColor, ComputeFogFactor(input.positionCS.z));
+                return half4(finalColor, 1.0);
             }
             ENDHLSL
         }

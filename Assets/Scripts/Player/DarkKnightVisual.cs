@@ -18,6 +18,15 @@ namespace Survivor.Player
 
         private void Awake()
         {
+            // Unity calls Awake even on disabled components. The replacement
+            // visual must prevent this legacy script from spawning another model.
+            if (!enabled || (TryGetComponent(out PlayerModelVisual replacement) && replacement.enabled))
+            {
+                Transform oldModel = transform.Find("DarkKnightModel");
+                if (oldModel != null) oldModel.gameObject.SetActive(false);
+                return;
+            }
+
             body = GetComponent<Rigidbody>();
 
             if (hideOriginalRenderer && TryGetComponent(out MeshRenderer originalRenderer))

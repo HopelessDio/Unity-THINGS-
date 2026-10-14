@@ -9,6 +9,14 @@ namespace Survivor.Player
     {
         public event Action<float> DashStarted;
 
+        public bool IsDashing => dashTimeRemaining > 0f;
+        public float DashProgress => IsDashing
+            ? Mathf.Clamp01(1f - dashTimeRemaining / dashDuration) : 1f;
+
+        // Zero means idle: keep facing. Active dashes use their locked heading.
+        public Vector3 FacingDirection => dashTimeRemaining > 0f
+            ? dashDirection : new Vector3(moveInput.x, 0f, moveInput.y);
+
         public float DashCooldownProgress
         {
             get
@@ -126,5 +134,6 @@ namespace Survivor.Player
             nextDashTime = Time.time + dashCooldown;
             DashStarted?.Invoke(dashDuration);
         }
+
     }
 }

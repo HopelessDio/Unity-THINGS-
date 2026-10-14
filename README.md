@@ -9,12 +9,17 @@ unityassetpack.com for unity asset store stuff
 
 ## Current prototype
 
-- Independent WASD movement and mouse aiming
-- Hold-to-fire projectile combat
+- WASD movement with smooth keyboard-controlled facing
+- Rigged Veil Walker with separate two-handed sword, running and dash animations
+- Click-buffered sword combo: diagonal sweep, return sweep, heavy overhead cut (15/15/35 damage)
+- Soft enemy targeting, connected combo transitions and dash cancellation
+- Dash afterimages, short ivory streak and pale ash puffs
 - Directional dash with temporary invulnerability
 - Enemy pursuit, spawning, health, contact damage, knockback, and hit feedback
 - Player health, score, survival timer, game-over, and restart systems
 - Difficulty scaling over survival time
+
+The earlier projectile shooter is retained but disabled in the current sword-only scene. Retry now rebuilds the character after scene loading. Blender sources and implementation notes are in [ArtSource/VeilWalker_README.md](ArtSource/VeilWalker_README.md).
 
 ## Unity version
 
@@ -23,9 +28,10 @@ Unity `6000.6.0f1`
 ## Controls
 
 - `WASD` or arrow keys: Move
-- Mouse: Aim
-- Hold left mouse button: Fire
+- Facing follows movement; mouse position does not rotate the player
+- Left mouse click: Attack; press again during a strike to queue the next combo hit
 - `Space`: Dash
+- Gamepad: Left stick to move, west button to attack, south button to dash
 
 ## Working agreement
 
