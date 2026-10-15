@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9f03f42478713c40b0d4cdbcc56464c, type: 3}
+  m_Name: GreatSwordMovement
+  m_EditorClassIdentifier: Assembly-CSharp::Survivor.Player.GreatSwordMovementSet
+  idle: {fileID: -203655887218126122, guid: aad6e8b4d9f3892459cf2f37b2c2d572, type: 3}
+  forward: {fileID: -203655887218126122, guid: 9a52fe17e7dc65a468c6860b8f4eef8e, type: 3}
+  backward: {fileID: -203655887218126122, guid: ac0ea6c974692d24eb1c17ee9a9c6fce, type: 3}
+  left: {fileID: -203655887218126122, guid: 4f2abd57f040ff843b8a66de92f37dca, type: 3}
+  right: {fileID: -203655887218126122, guid: 006f40d8da4b5ff409ee2c15a96af1b2, type: 3}
+  strideDistances: {x: 2.6034, y: 1.9208, z: 1.3494, w: 1.9855}
+  stanceOffsets: {x: 0.4333333, y: 0.55, z: 0.9, w: 0.9833333}

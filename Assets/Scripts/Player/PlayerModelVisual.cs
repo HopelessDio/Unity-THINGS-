@@ -88,6 +88,13 @@ namespace Survivor.Player
                 skin.updateWhenOffscreen = true;
             // Attach after fitting: the imported rig's 100x unit conversion must
             // be accounted for before capturing the resting foot positions.
+            Animator animator=visualInstance.GetComponent<Animator>();
+            if(animator!=null && animator.avatar!=null && animator.avatar.isHuman &&
+                Resources.Load<GreatSwordMovementSet>("GreatSwordMovement")!=null)
+            {
+                visualInstance.AddComponent<VeilWalkerCapeDrape>().Initialize();
+                visualInstance.AddComponent<GreatSwordLocomotion>().Initialize();
+            }
             VeilWalkerLocomotion locomotion = visualInstance.AddComponent<VeilWalkerLocomotion>();
             locomotion.Initialize();
             Survivor.Combat.PlayerSwordAttack swordAttack = visualInstance.AddComponent<Survivor.Combat.PlayerSwordAttack>();

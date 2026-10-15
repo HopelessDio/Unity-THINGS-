@@ -14,10 +14,19 @@ namespace Survivor.EditorTools
             PlayerSwordAttack attack = visual.GetComponent<PlayerSwordAttack>();
             if (attack == null) throw new InvalidOperationException("Sword combo component missing.");
             attack.Initialize();
+            // These isolated probes supply keyboard input by reflection. Keep
+            // the real desktop cursor out of their deterministic fallback tests.
+            PlayerAim aim=player.GetComponent<PlayerAim>();
+            bool wasEnabled=aim!=null && aim.enabled;
+            try
+            {
+            if(aim!=null) aim.enabled=false;
             ValidatePoses(player.transform, visual);
             ValidateDamage(player, attack);
             ValidateAimAssist(player, attack);
             ValidateSwingContinuity(player.transform, visual);
+            }
+            finally { if(aim!=null) aim.enabled=wasEnabled; }
         }
 
         private static void ValidatePoses(Transform player, Transform visual)
@@ -26,7 +35,7 @@ namespace Survivor.EditorTools
             PlayerWeaponEquipment equipment = visual.GetComponent<PlayerWeaponEquipment>();
             Transform hand = null;
             foreach (Transform bone in visual.GetComponentsInChildren<Transform>(true))
-                if (bone.name == "LeftHand") hand = bone;
+                if (bone.name == "LeftHand" || bone.name=="mixamorig:LeftHand") hand = bone;
             walk.ResetPose();
             float grip = Vector3.Distance(hand.position,equipment.SwordOffhandGrip.position);
             Quaternion original = player.rotation;
@@ -36,7 +45,7 @@ namespace Survivor.EditorTools
                 for (int heading = 0; heading < 8; heading++)
                 {
                     player.rotation = original * Quaternion.Euler(0f,heading*45f,0f);
-                    for (int stage = 0; stage < 3; stage++)
+                    for (int stage = 0; stage < PlayerSwordAttack.ComboLength; stage++)
                     {
                         for (int frame = 0; frame <= 32; frame++)
                         foreach (float cycle in new[] { 0f,.5f })
@@ -60,7 +69,7 @@ namespace Survivor.EditorTools
                 }
             }
             finally { player.rotation=original; walk.SampleKeyboardRun(0f,0f); }
-            Debug.Log("Sword animation validated: 1584 poses; diagonal sweep, return sweep and overhead cut across 8 headings; two-hand grip and gameplay root preserved.");
+            Debug.Log("Sword animation validated: 1056 poses; right and left sweeps across 8 headings; two-hand grip and gameplay root preserved.");
         }
 
         private static GameObject Probe(string name, Vector3 position)
@@ -102,23 +111,23 @@ namespace Survivor.EditorTools
                 attack.Cancel();
                 attack.RequestAttack();
                 float expected=300f;
-                for (int stage=0;stage<3;stage++)
+                for (int stage=0;stage<4;stage++)
                 {
-                    if (!attack.IsAttacking || attack.CurrentStrike!=stage)
-                        throw new InvalidOperationException("Sword clicks did not follow 0 -> 1 -> 2 combo order.");
+                    if (!attack.IsAttacking || attack.CurrentStrike!=stage%PlayerSwordAttack.ComboLength)
+                        throw new InvalidOperationException("Sword clicks did not alternate right -> left -> right -> left.");
                     hit.Invoke(attack,null);
                     hit.Invoke(attack,null);
                     expected-=attack.DamageForStrike(stage);
                     if (Mathf.Abs((float)hp.GetValue(target)-expected)>.001f)
                         throw new InvalidOperationException("Sword damage repeated within a strike or used the wrong amount.");
-                    if (stage<2) attack.RequestAttack();
+                    if (stage<3) attack.RequestAttack();
                     elapsed.SetValue(attack,PlayerSwordAttack.Duration(stage));
                     late.Invoke(attack,null);
                 }
-                if (attack.IsAttacking || attack.DamageForStrike(2)<=attack.DamageForStrike(0) ||
+                if (attack.IsAttacking || PlayerSwordAttack.ComboLength!=2 ||
                     (float)hp.GetValue(behind.GetComponent<EnemyHealth>())!=300f ||
                     (float)hp.GetValue(far.GetComponent<EnemyHealth>())!=300f)
-                    throw new InvalidOperationException("Heavy damage, idle termination or hit-cone/range check failed.");
+                    throw new InvalidOperationException("Two-hit combo, idle termination or hit-cone/range check failed.");
                 wall=new GameObject("SwordValidationWall") {hideFlags=HideFlags.HideAndDontSave};
                 wall.layer=LayerMask.NameToLayer("ArenaObstacle");
                 wall.transform.position=origin+facing*.7f;
@@ -131,7 +140,7 @@ namespace Survivor.EditorTools
                 dash.SetValue(movement,.1f);
                 late.Invoke(attack,null);
                 if (attack.IsAttacking) throw new InvalidOperationException("Dash must cancel a sword attack.");
-                Debug.Log("Sword combat validated: click-buffered 3-hit combo, 15/15/35 damage, once per enemy per swing even with duplicate colliders; range/rear/wall rejection and dash cancel passed. No live enemies touched.");
+                Debug.Log("Sword combat validated: right/left/right/left click-buffered alternation, 15 damage per sweep, no heavy third hit, once per enemy per swing even with duplicate colliders; range/rear/wall rejection and dash cancel passed. No live enemies touched.");
             }
             finally
             {
@@ -216,11 +225,11 @@ namespace Survivor.EditorTools
             PlayerWeaponEquipment gear=visual.GetComponent<PlayerWeaponEquipment>();
             Transform elbow=null;
             foreach(Transform bone in visual.GetComponentsInChildren<Transform>(true))
-                if(bone.name=="RightLowerArm") elbow=bone;
+                if(bone.name=="RightLowerArm" || bone.name=="mixamorig:RightForeArm") elbow=bone;
             float maximumBladeStep=0f,maximumElbowStep=0f;
             try
             {
-                for(int stage=0;stage<3;stage++)
+                for(int stage=0;stage<PlayerSwordAttack.ComboLength;stage++)
                 {
                     walk.ClearSwordAttackStart();
                     walk.SampleRunPose(0f,1f,player.forward);
@@ -246,17 +255,17 @@ namespace Survivor.EditorTools
                 // wind-up, instead of resetting to the running guard.
                 walk.ClearSwordAttackStart();
                 walk.SampleRunPose(0f,1f,player.forward);
-                for(int stage=0;stage<3;stage++)
+                for(int stage=0;stage<=PlayerSwordAttack.ComboLength;stage++)
                 {
                     walk.CaptureSwordAttackStart();
                     walk.SampleRunPose(0f,1f,player.forward);
-                    walk.SampleSwordAttack(stage,1f,true);
+                    walk.SampleSwordAttack(stage%PlayerSwordAttack.ComboLength,1f,true);
                     Quaternion ending=gear.SwordSocket.rotation;
                     Vector3 palm=gear.SwordSocket.position;
-                    if(stage==2) break;
+                    if(stage==PlayerSwordAttack.ComboLength) break;
                     walk.CaptureSwordAttackStart();
                     walk.SampleRunPose(0f,1f,player.forward);
-                    walk.SampleSwordAttack(stage+1,0f);
+                    walk.SampleSwordAttack((stage+1)%PlayerSwordAttack.ComboLength,0f);
                     if(Quaternion.Angle(ending,gear.SwordSocket.rotation)>1f ||
                         Vector3.Distance(palm,gear.SwordSocket.position)>.015f)
                         throw new InvalidOperationException("Combo transition reset the sword instead of carrying its previous pose.");

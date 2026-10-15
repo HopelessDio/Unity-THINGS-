@@ -9,9 +9,14 @@ unityassetpack.com for unity asset store stuff
 
 ## Current prototype
 
-- WASD movement with smooth keyboard-controlled facing
+A Mixamo-compatible T-pose/Humanoid Veil Walker now drives the gameplay player. Great Sword Pack clips provide forward/backward running and left/right strafing with smooth directional blending; standing uses a static two-handed sword guard. Mouse aiming, the existing two-hit sword combo, slash effects and dash remain in place. Other pack actions are not connected. See [rig files, previews and setup notes](ArtSource/VeilWalker_Mixamo_README.md).
+
+Level 1's crimson courtyard cliff road is installed in `Assets/Scenes/Game.unity`, using the approved shifted-right intro composition and a smooth follow camera. WASD and dash follow the camera's ground-plane directions. The actual 3D map has floor/building collision, a void kill zone, crimson foliage, amber lanterns and a camera-attached village backdrop. The previous arena is disabled, not deleted; its pre-install scene copy is `Assets/Scenes/Backups/Game_Before_Level01_20261015.unity`. Random arena spawning is disabled for this opening path; story events and the house interior are not implemented yet. Reinstall with **Survivor > Install Level 1 Crimson Village**. Export source: `ArtSource/Scripts/export_level01_unity.py`; approved Blender file: `ArtSource/Level01_IntroRight09.blend`.
+
+- WASD movement with smooth mouse-controlled facing
 - Rigged Veil Walker with separate two-handed sword, running and dash animations
-- Click-buffered sword combo: diagonal sweep, return sweep, heavy overhead cut (15/15/35 damage)
+- Click-buffered two-hit sword combo: right sweep, left return sweep (15 damage each); no heavy third hit
+- Broad white-ivory slash crescents with cool cloudy edges and fading mist wisps
 - Soft enemy targeting, connected combo transitions and dash cancellation
 - Dash afterimages, short ivory streak and pale ash puffs
 - Directional dash with temporary invulnerability
@@ -28,7 +33,7 @@ Unity `6000.6.0f1`
 ## Controls
 
 - `WASD` or arrow keys: Move
-- Facing follows movement; mouse position does not rotate the player
+- Face the mouse cursor independently of WASD movement; attacks use the cursor direction
 - Left mouse click: Attack; press again during a strike to queue the next combo hit
 - `Space`: Dash
 - Gamepad: Left stick to move, west button to attack, south button to dash

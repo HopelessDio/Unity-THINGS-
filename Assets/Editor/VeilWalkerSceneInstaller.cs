@@ -197,7 +197,7 @@ namespace Survivor.EditorTools
             }
             if (PlayerAim.TryGetFacingRotation(Vector3.zero, out _))
                 throw new InvalidOperationException("Idle must keep the last facing direction.");
-            Debug.Log("Keyboard facing validated: 16 directions and idle. Mouse no longer rotates Player3d; world-direction WASD and approved run retained.");
+            Debug.Log("Facing rotation math validated: 16 directions and zero-vector handling. Runtime facing uses the mouse combat-plane projection; WASD remains world-direction movement.");
         }
 
         private static void ValidateKeyboardRun(Transform visual, Transform player)

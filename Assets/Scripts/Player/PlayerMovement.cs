@@ -15,7 +15,7 @@ namespace Survivor.Player
 
         // Zero means idle: keep facing. Active dashes use their locked heading.
         public Vector3 FacingDirection => dashTimeRemaining > 0f
-            ? dashDirection : new Vector3(moveInput.x, 0f, moveInput.y);
+            ? dashDirection : WorldInput(moveInput);
 
         public float DashCooldownProgress
         {
@@ -33,6 +33,16 @@ namespace Survivor.Player
 
         [Header("Movement")]
         [SerializeField, Min(0f)] private float moveSpeed = 6f;
+        [SerializeField] private Transform movementView;
+
+        public void ConfigureMovementView(Transform view) => movementView=view;
+        public Vector3 WorldInput(Vector2 input)
+        {
+            if(movementView==null) return new Vector3(input.x,0,input.y);
+            Vector3 right=movementView.right; right.y=0; right.Normalize();
+            Vector3 forward=movementView.forward; forward.y=0; forward.Normalize();
+            return right*input.x+forward*input.y;
+        }
 
         [Header("Dash")]
         [SerializeField, Min(0f)] private float dashSpeed = 16f;
@@ -111,7 +121,7 @@ namespace Survivor.Player
                 return;
             }
 
-            Vector3 movement = new Vector3(moveInput.x, 0f, moveInput.y);
+            Vector3 movement = WorldInput(moveInput);
             Vector3 currentVelocity = body.linearVelocity;
             body.linearVelocity = new Vector3(
                 movement.x * moveSpeed,
@@ -121,7 +131,7 @@ namespace Survivor.Player
 
         private void StartDash()
         {
-            dashDirection = new Vector3(moveInput.x, 0f, moveInput.y);
+            dashDirection = WorldInput(moveInput);
 
             if (dashDirection.sqrMagnitude < 0.001f)
             {

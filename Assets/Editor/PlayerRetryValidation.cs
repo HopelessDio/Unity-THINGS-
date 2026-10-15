@@ -18,6 +18,7 @@ namespace Survivor.EditorTools
         private const string WaitKey = "Survivor.RetryTest.Wait";
         private const string DeadlineKey = "Survivor.RetryTest.Deadline";
         private const string RunningKey = "Survivor.RetryTest.WasPlaying";
+        private const string LevelKey = "Survivor.RetryTest.LevelOneExpected";
 
         static PlayerRetryValidation() { EditorApplication.update += Tick; }
 
@@ -33,6 +34,7 @@ namespace Survivor.EditorTools
                     Scene scene = SceneManager.GetActiveScene();
                     if (scene.name != "Game") throw new InvalidOperationException("Retry validation only runs in the Game scene.");
                     SessionState.SetBool(RunningKey,EditorApplication.isPlaying);
+                    SessionState.SetBool(LevelKey,GameObject.Find("Level01_CrimsonVillage")!=null);
                     SessionState.SetInt(PhaseKey,1);
                     SessionState.SetFloat(WaitKey,now+.6f);
                     SessionState.SetFloat(DeadlineKey,now+20f);
@@ -53,6 +55,16 @@ namespace Survivor.EditorTools
                     if (retry==null) retry=root.GetComponentInChildren<GameOverUI>(true);
                 }
                 if (player==null || retry==null) throw new InvalidOperationException("Retry test cannot locate player/UI.");
+                if(SessionState.GetBool(LevelKey,false))
+                {
+                    Camera camera=Camera.main;
+                    if(GameObject.Find("Level01_CrimsonVillage")==null || camera==null ||
+                        camera.GetComponent<Survivor.CameraSystem.LevelOneCamera>()==null ||
+                        camera.transform.Find("Level01_PictureBackdrop")==null ||
+                        !Physics.Raycast(player.transform.position,Vector3.down,2,1,QueryTriggerInteraction.Ignore))
+                        throw new InvalidOperationException($"Retry phase {phase}: Level 1 map/floor/camera/background did not reload.");
+                    Debug.Log($"LEVEL01 RETRY PASS phase {phase}: village, spawn floor, shifted camera and backdrop retained.");
+                }
                 Transform visual=player.transform.Find("VeilWalkerVisual");
                 int count=0;
                 foreach (Transform child in player.transform) if(child.name=="VeilWalkerVisual") count++;
@@ -61,6 +73,10 @@ namespace Survivor.EditorTools
                 SkinnedMeshRenderer skin=visual.GetComponentInChildren<SkinnedMeshRenderer>();
                 PlayerWeaponEquipment gear=visual.GetComponent<PlayerWeaponEquipment>();
                 PlayerHealth health=player.GetComponent<PlayerHealth>();
+                Animator humanoid=visual.GetComponent<Animator>();
+                if(humanoid!=null && humanoid.avatar!=null && humanoid.avatar.isHuman &&
+                    (visual.GetComponent<GreatSwordLocomotion>()==null || !visual.GetComponent<GreatSwordLocomotion>().IsReady))
+                    throw new InvalidOperationException($"Retry phase {phase}: Humanoid movement graph missing.");
                 if(skin==null || !skin.enabled || skin.bounds.size.y<.5f || gear==null || gear.EquippedSword==null ||
                     visual.GetComponent<VeilWalkerLocomotion>()==null || !visual.GetComponent<VeilWalkerLocomotion>().IsReady ||
                     visual.GetComponent<PlayerSwordAttack>()==null || visual.GetComponent<PlayerDashAfterimages>()==null ||

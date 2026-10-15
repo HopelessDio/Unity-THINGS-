@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Survivor.Player
 {
@@ -12,6 +13,40 @@ namespace Survivor.Player
         private Quaternion desiredFacing;
         private float angularVelocity;
         private Survivor.Combat.PlayerSwordAttack sword;
+        private Camera aimCamera;
+        public bool UsesMouseAim => enabled && Mouse.current != null;
+
+        public Vector3 InputDirection
+        {
+            get
+            {
+                if (UsesMouseAim)
+                {
+                    if (aimCamera == null) aimCamera = Camera.main;
+                    if (aimCamera != null && aimCamera.pixelRect.Contains(Mouse.current.position.ReadValue()) &&
+                        TryProjectDirection(aimCamera.ScreenPointToRay(Mouse.current.position.ReadValue()),transform.position,out Vector3 direction))
+                        return direction;
+                    return transform.forward;
+                }
+                if (movement == null) movement = GetComponent<PlayerMovement>();
+                Vector3 input = movement != null ? movement.FacingDirection : Vector3.zero;
+                return input.sqrMagnitude > .001f ? input.normalized : transform.forward;
+            }
+        }
+
+        public static bool TryProjectDirection(Ray ray, Vector3 playerPosition, out Vector3 direction)
+        {
+            direction = Vector3.zero;
+            // Project onto the horizontal combat plane, not individual floor
+            // colliders: aim stays stable across pits, walls and raised pieces.
+            var plane = new UnityEngine.Plane(Vector3.up, playerPosition);
+            if (!plane.Raycast(ray, out float distance)) return false;
+            Vector3 delta = ray.GetPoint(distance) - playerPosition;
+            delta.y = 0f;
+            if (delta.sqrMagnitude < .0025f) return false;
+            direction = delta.normalized;
+            return true;
+        }
 
         private void Awake()
         {
@@ -32,8 +67,8 @@ namespace Survivor.Player
             if (movement == null || !movement.enabled) return;
             if (sword == null) sword = GetComponentInChildren<Survivor.Combat.PlayerSwordAttack>();
             bool attackTurning = sword != null && sword.IsFacingLocked && !movement.IsDashing;
-            Vector3 direction = attackTurning
-                ? sword.AttackDirection : movement.FacingDirection;
+            Vector3 direction = movement.IsDashing ? movement.FacingDirection
+                : attackTurning ? sword.AttackDirection : InputDirection;
             if (TryGetFacingRotation(direction, out Quaternion rotation))
                 desiredFacing = rotation;
             // Complete the last requested turn even when the keys are released.

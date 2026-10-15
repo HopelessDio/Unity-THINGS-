@@ -37,6 +37,7 @@ namespace Survivor.Player
         private Rigidbody body;
         private PlayerAim facing;
         private PlayerMovement movement;
+        private GreatSwordLocomotion importedMovement;
         private Quaternion previousFacing;
         private Vector3 previousInputHeading;
         private Transform player;
@@ -94,6 +95,7 @@ namespace Survivor.Player
             player = body.transform;
             facing = body.GetComponent<PlayerAim>();
             movement = body.GetComponent<PlayerMovement>();
+            importedMovement=GetComponent<GreatSwordLocomotion>();
             previousFacing = player.rotation;
             previousInputHeading = player.forward;
             hips = FindBone("Hips");
@@ -127,11 +129,21 @@ namespace Survivor.Player
             if (equipment != null && equipment.SwordSocket != null && equipment.SwordOffhandGrip != null && leftArm != null)
             {
                 supportOffset = Quaternion.Inverse(equipment.SwordSocket.rotation) *
-                    (leftArm.foot.position - equipment.SwordOffhandGrip.position);
+                    (leftArm.foot.position - (importedMovement!=null && equipment.GunSocket!=null ? equipment.GunSocket.position : equipment.SwordOffhandGrip.position));
                 supportOrientation = Quaternion.Inverse(equipment.SwordSocket.rotation) * leftArm.foot.rotation;
                 rightGripOffset = Quaternion.Inverse(equipment.SwordSocket.rotation) *
                     (rightArm.foot.position - equipment.SwordSocket.position);
                 rightGripOrientation = Quaternion.Inverse(equipment.SwordSocket.rotation) * rightArm.foot.rotation;
+                if(importedMovement!=null)
+                {
+                    Quaternion socket=equipment.SwordSocket.rotation;
+                    SolveLeg(leftArm,equipment.SwordOffhandGrip.position+socket*supportOffset,
+                        leftArm.lower.position-leftArm.upper.position);
+                    leftArm.foot.rotation=socket*supportOrientation;
+                    leftArm.upperRest=leftArm.upper.localRotation;
+                    leftArm.lowerRest=leftArm.lower.localRotation;
+                    leftArm.footRest=leftArm.foot.localRotation;
+                }
             }
             ready = true;
         }
@@ -140,6 +152,10 @@ namespace Survivor.Player
         {
             foreach (Transform bone in GetComponentsInChildren<Transform>(true))
                 if (bone.name == boneName) return bone;
+            string alias=boneName.Replace("UpperArm","Arm").Replace("LowerArm","ForeArm").Replace("UpperLeg","UpLeg").Replace("LowerLeg","Leg");
+            if(alias=="Chest") alias="Spine2";
+            foreach(Transform bone in GetComponentsInChildren<Transform>(true))
+                if(bone.name=="mixamorig:"+alias) return bone;
             return null;
         }
 
@@ -177,7 +193,7 @@ namespace Survivor.Player
             displacement.y = 0f;
             weight = Mathf.MoveTowards(weight, speed > .08f ? 1f : 0f, blendSpeed * dt);
             runWeight = Mathf.MoveTowards(runWeight, runByDefault ? 1f : 0f, blendSpeed * dt);
-            bool keyboardFacing = facing != null && facing.enabled && movement != null && movement.enabled;
+            bool keyboardFacing = facing != null && facing.enabled && !facing.UsesMouseAim && movement != null && movement.enabled;
             bool canPlantFeet = !keyboardFacing || PrepareKeyboardRun();
             bool dashing = movement != null && movement.enabled && movement.IsDashing;
             if (dashing && !wasDashing)
@@ -189,6 +205,13 @@ namespace Survivor.Player
             dashWeight = Mathf.MoveTowards(dashWeight, dashing ? 1f : 0f,
                 dt / (dashing ? dashBlendIn : dashBlendOut));
             wasDashing = dashing;
+            if(importedMovement!=null && importedMovement.IsReady)
+            {
+                ApplyStandingGuard(importedMovement.StandingWeight);
+                if(dashWeight>.0001f) ApplyDashOverlay(Mathf.SmoothStep(0,1,dashWeight),dashPoseProgress,dashLeadSide);
+                else ApplySupportingGrip();
+                return;
+            }
             if (speed > .08f && !dashing)
             {
                 // Smooth yaw only. A 180-degree reversal must not interpolate
@@ -210,6 +233,28 @@ namespace Survivor.Player
                 canPlantFeet && dashWeight < .001f);
             if (dashWeight > .0001f)
                 ApplyDashOverlay(Mathf.SmoothStep(0f, 1f, dashWeight), dashPoseProgress, dashLeadSide);
+        }
+
+        public void ApplyStandingGuard(float amount)
+        {
+            if(!ready || amount<.0001f || rightArm==null || leftArm==null || equipment==null || equipment.SwordSocket==null) return;
+            Vector3 shoulders=(leftArm.upper.position+rightArm.upper.position)*.5f;
+            Vector3 palm=shoulders-Vector3.up*.3f+player.forward*.32f;
+            Quaternion socket=Quaternion.Slerp(equipment.SwordSocket.rotation,
+                player.rotation*Quaternion.Euler(-12,0,0),Mathf.Clamp01(amount));
+            palm=Vector3.Lerp(equipment.SwordSocket.position,palm,Mathf.Clamp01(amount));
+            SolveLeg(rightArm,palm+socket*rightGripOffset,player.right-player.forward*.3f-Vector3.up*.2f);
+            rightArm.foot.rotation=socket*rightGripOrientation;
+            ApplySupportingGrip();
+        }
+
+        public void ApplySupportingGrip()
+        {
+            if(equipment==null || equipment.SwordSocket==null || equipment.SwordOffhandGrip==null || leftArm==null) return;
+            Quaternion socket=equipment.SwordSocket.rotation;
+            SolveLeg(leftArm,equipment.SwordOffhandGrip.position+socket*supportOffset,
+                leftArm.lower.position-leftArm.upper.position);
+            leftArm.foot.rotation=socket*supportOrientation;
         }
 
         private bool PrepareKeyboardRun()
@@ -297,7 +342,7 @@ namespace Survivor.Player
                 leftPole=Vector3.Slerp(leftPole.normalized,
                     (leftArm.lower.position-leftArm.upper.position).normalized,strength);
             }
-            float twist = strike == 2 ? 0f : Mathf.Lerp(strike == 0 ? 20f : -25f, strike == 0 ? -25f : 25f, sweep);
+            float twist = strike == 2 ? 0f : Mathf.Lerp(strike == 0 ? -25f : 25f, strike == 0 ? 25f : -25f, sweep);
             if (chest != null)
             {
                 Quaternion goalChest = Quaternion.AngleAxis(twist, Vector3.up)*chest.rotation;
@@ -309,15 +354,15 @@ namespace Survivor.Player
             Vector3 windHand, endHand, controlHand;
             if (strike == 0)
             {
-                windRotation=Quaternion.Euler(-105f,-30f,-20f); endRotation=Quaternion.Euler(25f,-50f,20f);
-                windHand = new Vector3(.12f,.04f,.2f); endHand = new Vector3(-.1f,-.22f,.25f);
-                controlHand=new Vector3(.02f,-.06f,.34f);
+                windRotation=Quaternion.Euler(12f,-65f,-15f); endRotation=Quaternion.Euler(12f,65f,15f);
+                windHand = new Vector3(-.12f,-.1f,.22f); endHand = new Vector3(.12f,-.14f,.23f);
+                controlHand=new Vector3(0f,-.02f,.35f);
             }
             else if (strike == 1)
             {
-                windRotation=Quaternion.Euler(25f,-50f,20f); endRotation=Quaternion.Euler(-10f,65f,-20f);
-                windHand = new Vector3(-.1f,-.22f,.25f); endHand = new Vector3(.1f,-.18f,.25f);
-                controlHand=new Vector3(0f,-.1f,.35f);
+                windRotation=Quaternion.Euler(12f,65f,15f); endRotation=Quaternion.Euler(12f,-65f,-15f);
+                windHand = new Vector3(.12f,-.14f,.23f); endHand = new Vector3(-.12f,-.1f,.22f);
+                controlHand=new Vector3(0f,-.02f,.35f);
             }
             else
             {

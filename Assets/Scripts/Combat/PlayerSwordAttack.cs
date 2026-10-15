@@ -13,18 +13,21 @@ namespace Survivor.Combat
     public sealed class PlayerSwordAttack : MonoBehaviour
     {
         [SerializeField, Min(0f)] private float sweepDamage = 15f;
-        [SerializeField, Min(0f)] private float heavyDamage = 35f;
         [SerializeField, Min(.1f)] private float reach = 2.5f;
         [SerializeField, Min(.05f)] private float comboGrace = .3f;
         [Header("Soft attack targeting")]
         [SerializeField, Range(0f, 85f)] private float assistHalfAngle = 70f;
         [SerializeField, Min(0f)] private float assistRangePadding = .35f;
         private PlayerMovement movement;
+        private PlayerAim aim;
         private PlayerHealth health;
         private VeilWalkerLocomotion locomotion;
         private PlayerWeaponEquipment equipment;
         private Transform player;
         private TrailRenderer slash;
+        private SwordSweepVfx sweepVfx;
+        private int sweepSlot=-1;
+        public const int ComboLength=2;
         private readonly Collider[] overlap = new Collider[128];
         private readonly HashSet<EnemyHealth> hitThisStrike = new HashSet<EnemyHealth>();
         private float elapsed, previousProgress, lastFinish = float.NegativeInfinity;
@@ -37,20 +40,23 @@ namespace Survivor.Combat
         public bool IsFacingLocked => IsAttacking && elapsed / Duration(strike) <= SwingEnd(strike);
         public Vector3 AttackDirection { get; private set; }
         public int CurrentStrike => strike;
-        public float DamageForStrike(int index) => index == 2 ? heavyDamage : sweepDamage;
-        public static float Duration(int index) => index == 2 ? .66f : index == 1 ? .4f : .42f;
-        public static float WindupEnd(int index) => index == 2 ? .36f : index == 1 ? .25f : .28f;
+        public float DamageForStrike(int index) => sweepDamage;
+        public static float Duration(int index) => index == 1 ? .4f : .42f;
+        public static float WindupEnd(int index) => index == 1 ? .25f : .28f;
         public static float SwingEnd(int index) => .7f;
 
         public void Initialize()
         {
             movement = GetComponentInParent<PlayerMovement>();
+            aim = GetComponentInParent<PlayerAim>();
             health = GetComponentInParent<PlayerHealth>();
             locomotion = GetComponent<VeilWalkerLocomotion>();
             equipment = GetComponent<PlayerWeaponEquipment>();
             if (movement == null || locomotion == null || equipment == null) return;
             player = movement.transform;
             blockers = LayerMask.GetMask("ArenaObstacle");
+            sweepVfx=GetComponent<SwordSweepVfx>();
+            if(sweepVfx==null) sweepVfx=gameObject.AddComponent<SwordSweepVfx>();
             if (slash != null || equipment.EquippedSword == null) return;
             Transform socket = equipment.SwordSocket;
             Bounds blade = equipment.EquippedSword.GetComponentInChildren<Renderer>().bounds;
@@ -92,7 +98,10 @@ namespace Survivor.Combat
                 // Correct aim gently during preparation, never swing around
                 // chasing a target after the blade has committed to the strike.
                 if (elapsed / Duration(strike) < WindupEnd(strike))
-                    AttackDirection = ResolveAttackDirection(intendedDirection);
+                {
+                    if (aim != null && aim.UsesMouseAim) intendedDirection = aim.InputDirection;
+                    AttackDirection = ResolveAttackDirection(intendedDirection, aim != null && aim.UsesMouseAim);
+                }
             }
             bool mouseClick = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
             bool padClick = Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame;
@@ -110,7 +119,7 @@ namespace Survivor.Combat
             {
                 // A click in recovery starts the next wind-up from the current
                 // pose rather than snapping back to a held follow-through.
-                if (elapsed / Duration(strike) > SwingEnd(strike)) Begin((strike+1)%3);
+                if (elapsed / Duration(strike) > SwingEnd(strike)) Begin((strike+1)%ComboLength);
                 else queued = true;
                 return;
             }
@@ -122,18 +131,20 @@ namespace Survivor.Combat
             // Preserve the incoming guard/follow-through instead of resetting
             // the weapon to locomotion's guard between queued combo strikes.
             locomotion.CaptureSwordAttackStart();
-            strike = index;
+            if(sweepSlot>=0 && sweepVfx!=null) sweepVfx.Release(sweepSlot);
+            sweepSlot=-1;
+            strike = index % ComboLength;
             elapsed = previousProgress = 0f;
             queued = false;
             hitThisStrike.Clear();
-            Vector3 input = movement.FacingDirection;
+            Vector3 input = aim != null ? aim.InputDirection : movement.FacingDirection;
             intendedDirection = input.sqrMagnitude > .001f ? input.normalized : player.forward;
-            AttackDirection = ResolveAttackDirection(intendedDirection);
+            AttackDirection = ResolveAttackDirection(intendedDirection, aim != null && aim.UsesMouseAim);
             IsAttacking = true;
             if (slash != null) slash.Clear();
         }
 
-        public Vector3 ResolveAttackDirection(Vector3 intended)
+        public Vector3 ResolveAttackDirection(Vector3 intended, bool mouseAiming = false)
         {
             intended.y = 0f;
             if (intended.sqrMagnitude < .001f) intended = player.forward;
@@ -145,7 +156,9 @@ namespace Survivor.Combat
             if (candidates != overlap) count = candidates.Length;
             float bestScore = float.NegativeInfinity;
             Vector3 bestDirection = intended;
-            float minimumDot = Mathf.Cos(assistHalfAngle * Mathf.Deg2Rad);
+            // Keep cursor aiming precise: broad keyboard assist must not pull a
+            // mouse-directed strike sideways toward an unrelated enemy.
+            float minimumDot = Mathf.Cos((mouseAiming ? Mathf.Min(assistHalfAngle,12f) : assistHalfAngle) * Mathf.Deg2Rad);
             for (int i=0;i<count;i++)
             {
                 Collider candidate = candidates[i];
@@ -180,6 +193,12 @@ namespace Survivor.Combat
             float progress = Mathf.Clamp01(elapsed / Duration(strike));
             locomotion.SampleSwordAttack(strike, progress, queued);
             bool activeWindow = progress >= WindupEnd(strike) && progress <= SwingEnd(strike);
+            if(progress>=WindupEnd(strike) && previousProgress<=SwingEnd(strike))
+            {
+                if(sweepSlot<0) sweepSlot=sweepVfx.BeginSweep(strike,player.position,AttackDirection,reach);
+                sweepVfx.SetProgress(sweepSlot,Mathf.InverseLerp(WindupEnd(strike),SwingEnd(strike),progress));
+            }
+            if(progress>SwingEnd(strike) && sweepSlot>=0) sweepVfx.Release(sweepSlot);
             if (slash != null) slash.emitting = activeWindow;
             // Also covers an active window crossed by a low-framerate update.
             if (progress >= WindupEnd(strike) && previousProgress <= SwingEnd(strike)) DealHits();
@@ -187,7 +206,7 @@ namespace Survivor.Combat
             if (elapsed < Duration(strike)) return;
             IsAttacking = false;
             lastFinish = Time.time;
-            nextStrike = (strike + 1) % 3;
+            nextStrike = (strike + 1) % ComboLength;
             if (slash != null) slash.emitting = false;
             if (queued) Begin(nextStrike);
             else locomotion.ClearSwordAttackStart();
@@ -214,14 +233,14 @@ namespace Survivor.Combat
                 EnemyHealth enemy = collider.GetComponentInParent<EnemyHealth>();
                 if (enemy == null || enemy.IsDead || hitThisStrike.Contains(enemy)) continue;
                 Vector3 nearest = collider.ClosestPoint(player.position);
-                if (!InsideStrike(nearest - player.position, AttackDirection, reach, strike == 2)) continue;
+                if (!InsideStrike(nearest - player.position, AttackDirection, reach, false)) continue;
                 if (Physics.Linecast(player.position, collider.bounds.center, blockers, QueryTriggerInteraction.Ignore)) continue;
                 hitThisStrike.Add(enemy);
                 Vector3 away = enemy.transform.position - player.position;
                 away.y = 0f;
                 if (away.sqrMagnitude < .001f) away = AttackDirection;
                 EnemyChaser chaser = enemy.GetComponent<EnemyChaser>();
-                if (chaser != null) chaser.ApplyKnockback(away.normalized * (strike == 2 ? 9f : 6f), .15f);
+                if (chaser != null) chaser.ApplyKnockback(away.normalized * 6f, .15f);
                 EnemyHitFlash flash = enemy.GetComponent<EnemyHitFlash>();
                 if (flash != null) flash.Play();
                 enemy.TakeDamage(DamageForStrike(strike));
@@ -234,6 +253,8 @@ namespace Survivor.Combat
             nextStrike = 0;
             lastFinish = float.NegativeInfinity;
             hitThisStrike.Clear();
+            if(sweepVfx!=null && sweepSlot>=0) sweepVfx.Release(sweepSlot,true);
+            sweepSlot=-1;
             if (locomotion != null) locomotion.ClearSwordAttackStart();
             if (slash != null) { slash.emitting = false; slash.Clear(); }
         }
