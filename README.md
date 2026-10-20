@@ -11,7 +11,7 @@ unityassetpack.com for unity asset store stuff
 
 A Mixamo-compatible T-pose/Humanoid Veil Walker now drives the gameplay player. Great Sword Pack clips provide forward/backward running and left/right strafing with smooth directional blending; standing uses a static two-handed sword guard. Mouse aiming, the existing two-hit sword combo, slash effects and dash remain in place. Other pack actions are not connected. See [rig files, previews and setup notes](ArtSource/VeilWalker_Mixamo_README.md).
 
-Level 1's crimson courtyard cliff road is installed in `Assets/Scenes/Game.unity`, using the approved shifted-right intro composition and a smooth follow camera. WASD and dash follow the camera's ground-plane directions. The actual 3D map has floor/building collision, a void kill zone, crimson foliage, amber lanterns and a camera-attached village backdrop. The previous arena is disabled, not deleted; its pre-install scene copy is `Assets/Scenes/Backups/Game_Before_Level01_20261015.unity`. Random arena spawning is disabled for this opening path; story events and the house interior are not implemented yet. Reinstall with **Survivor > Install Level 1 Crimson Village**. Export source: `ArtSource/Scripts/export_level01_unity.py`; approved Blender file: `ArtSource/Level01_IntroRight09.blend`.
+Level 1's crimson courtyard cliff road is installed in `Assets/Scenes/Game.unity`, using the approved shifted-right intro composition and a smooth follow camera. WASD and dash follow the camera's ground-plane directions. The actual 3D map has floor/building collision, a void kill zone, crimson foliage, amber lanterns and a camera-attached village backdrop. The previous arena is disabled, not deleted; its pre-install scene copy is `Assets/Scenes/Backups/Game_Before_Level01_20261015.unity`. Random arena spawning is disabled for this opening path; the home interior and door entrance are connected, while the story reveal remains to be built. Reinstall with **Survivor > Install Level 1 Crimson Village**, then **Survivor > Levels > Connect Home Door** to reconnect its regenerated entrance marker. Export source: `ArtSource/Scripts/export_level01_unity.py`; approved Blender file: `ArtSource/Level01_IntroRight09.blend`.
 
 - WASD movement with smooth mouse-controlled facing
 - Rigged Veil Walker with separate two-handed sword, running and dash animations
@@ -26,6 +26,12 @@ Level 1's crimson courtyard cliff road is installed in `Assets/Scenes/Game.unity
 
 The earlier projectile shooter is retained but disabled in the current sword-only scene. Retry now rebuilds the character after scene loading. Blender sources and implementation notes are in [ArtSource/VeilWalker_README.md](ArtSource/VeilWalker_README.md).
 
+The Ashbound zombie is a separate reusable enemy prefab with a low-density mesh and Mixamo-compatible Humanoid rig. It does not enable enemy spawning in the intro. See [model, prefab, animation and testing notes](ArtSource/Ashbound_Zombie_README.md).
+
+The mother character is an optimized noncombatant prefab: about 2.6k vertices, one skinned mesh/material, an eight-pixel palette and a Humanoid rig with idle/gentle walk. The living prefab is preserved; the current interior uses a separate static lying-down pose beside a visual-only feeding zombie. Story reaction/combat triggers are not connected yet. See [mother model and setup notes](ArtSource/VillageMother_README.md).
+
+The separate [house interior](ArtSource/HomeInterior_README.md) is `Assets/Scenes/Level01_HomeInterior.unity`, with the mother near the hearth, a cutaway room, furniture collision and the existing playable Veil Walker. In the outdoor `Game.unity`, approach the family home's front door and press **E** (controller **Y / Triangle**) to fade into the interior at its entry marker. The outdoor visuals/geometry are preserved. This is currently one-way; the mother/zombie story reveal and an exit interaction are not implemented. Death/Retry reloads the interior once inside.
+
 ## Unity version
 
 Unity `6000.6.0f1`
@@ -36,6 +42,7 @@ Unity `6000.6.0f1`
 - Face the mouse cursor independently of WASD movement; attacks use the cursor direction
 - Left mouse click: Attack; press again during a strike to queue the next combo hit
 - `Space`: Dash
+- `E`: Enter home when the doorway prompt appears (controller north button: Y / Triangle)
 - Gamepad: Left stick to move, west button to attack, south button to dash
 
 ## Working agreement
@@ -122,4 +129,4 @@ The arena will use modular 3D prefabs rather than a Tilemap.
 
 ## Current next step
 
-Add a visible dash cooldown indicator, then begin the modular arena and gameplay-boundary pass.
+Add the home discovery reaction: briefly frame the mother and feeding zombie, play the protagonist's reaction, then have the zombie notice him and hand off to the first combat encounter. The door, static mother pose and visual-only feeding loop are already staged; cinematic timing, sound and the combat handoff remain.

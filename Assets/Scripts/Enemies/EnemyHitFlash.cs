@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Survivor.Enemies
@@ -8,24 +9,38 @@ namespace Survivor.Enemies
         [SerializeField] private Color flashColor = Color.white;
         [SerializeField, Min(0.01f)] private float flashDuration = 0.08f;
 
-        private Renderer targetRenderer;
-        private Material runtimeMaterial;
-        private Color normalColor;
+        private sealed class Slot
+        {
+            public Renderer renderer;
+            public int index;
+            public MaterialPropertyBlock before;
+            public MaterialPropertyBlock flash;
+        }
+
+        private readonly List<Slot> slots = new List<Slot>();
+        private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
+        private static readonly int ColorProperty = Shader.PropertyToID("_Color");
         private Coroutine flashRoutine;
 
         private void Awake()
         {
-            targetRenderer = GetComponentInChildren<Renderer>();
-
-            if (targetRenderer == null)
+            foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+            {
+                Material[] materials = renderer.sharedMaterials;
+                for (int i = 0; i < materials.Length; i++)
+                {
+                    if (materials[i] == null) continue;
+                    slots.Add(new Slot { renderer = renderer, index = i,
+                        before = new MaterialPropertyBlock(), flash = new MaterialPropertyBlock() });
+                }
+            }
+            if (slots.Count == 0)
             {
                 Debug.LogError("Enemy Hit Flash needs a Renderer.", this);
                 enabled = false;
                 return;
             }
 
-            runtimeMaterial = targetRenderer.material;
-            normalColor = runtimeMaterial.color;
         }
 
         public void Play()
@@ -38,6 +53,7 @@ namespace Survivor.Enemies
             if (flashRoutine != null)
             {
                 StopCoroutine(flashRoutine);
+                Restore();
             }
 
             flashRoutine = StartCoroutine(Flash());
@@ -45,26 +61,35 @@ namespace Survivor.Enemies
 
         private IEnumerator Flash()
         {
-            runtimeMaterial.color = flashColor;
+            // Each skin submaterial flashes; shared assets are never cloned or recolored.
+            foreach (Slot slot in slots)
+            {
+                if (slot.renderer == null) continue;
+                slot.renderer.GetPropertyBlock(slot.before, slot.index);
+                slot.renderer.GetPropertyBlock(slot.flash, slot.index);
+                slot.flash.SetColor(BaseColor, flashColor);
+                slot.flash.SetColor(ColorProperty, flashColor);
+                slot.renderer.SetPropertyBlock(slot.flash, slot.index);
+            }
             yield return new WaitForSeconds(flashDuration);
-            runtimeMaterial.color = normalColor;
+            Restore();
             flashRoutine = null;
         }
 
         private void OnDisable()
         {
-            if (runtimeMaterial != null)
+            if (flashRoutine != null)
             {
-                runtimeMaterial.color = normalColor;
+                StopCoroutine(flashRoutine);
+                Restore();
+                flashRoutine = null;
             }
         }
 
-        private void OnDestroy()
+        private void Restore()
         {
-            if (runtimeMaterial != null)
-            {
-                Destroy(runtimeMaterial);
-            }
+            foreach (Slot slot in slots)
+                if (slot.renderer != null) slot.renderer.SetPropertyBlock(slot.before, slot.index);
         }
     }
 }

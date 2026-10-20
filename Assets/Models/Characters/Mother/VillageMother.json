@@ -1,0 +1,19 @@
+{
+  "vertices": 2621,
+  "triangles": 4758,
+  "bones": 52,
+  "materialSlots": 1,
+  "palettePixels": 8,
+  "maxWeightsPerVertex": 2,
+  "normalizedWeights": true,
+  "tPose": true,
+  "sourceHeight": 1.789,
+  "unityHeight": 1.7,
+  "clips": [
+    "Mother_Idle",
+    "Mother_Walk"
+  ],
+  "nominalWalkSpeed": 0.53,
+  "clothSimulation": false,
+  "hiddenBodyGeometry": false
+}

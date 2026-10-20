@@ -5901,7 +5901,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 11.052681
+  orthographic size: 19.505033
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -7597,7 +7597,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 600}
-  m_LocalScale: {x: 62.62, y: 22.326416, z: 1}
+  m_LocalScale: {x: 62.62, y: 39.400166, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 330585546}
@@ -21323,6 +21323,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1308242242}
+  - component: {fileID: 1308242243}
   m_Layer: 0
   m_Name: Level01_HomeEntrance
   m_TagString: Untagged
@@ -21339,12 +21340,26 @@ Transform:
   m_GameObject: {fileID: 1308242241}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -20, y: 0, z: -53}
+  m_LocalPosition: {x: -20, y: 0.49, z: -53}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1239198466}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1308242243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308242241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b0826599af71144bff7fb40a16196e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Survivor.Player.HomeDoor
+  destination: Assets/Scenes/Level01_HomeInterior.unity
+  interactionRadius: 1.9
 --- !u!1 &1309456090
 GameObject:
   m_ObjectHideFlags: 0
@@ -34964,7 +34979,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 13
   m_Type: 1
-  m_Color: {r: 0.8, g: 0.82, b: 0.9, a: 1}
+  m_Color: {r: 0.80392164, g: 0.57254905, b: 0.28235295, a: 1}
   m_Intensity: 1.3
   m_Range: 10
   m_SpotAngle: 30

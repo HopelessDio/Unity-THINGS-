@@ -1,0 +1,15 @@
+{
+  "height": 2.092,
+  "vertices": 2985,
+  "triangles": 5483,
+  "bones": 52,
+  "normalizedWeights": true,
+  "tPose": true,
+  "fingers": "five three-joint chains per hand",
+  "clips": [
+    "Ashbound_Idle",
+    "Ashbound_Shuffle"
+  ],
+  "forward": "Blender -Y",
+  "nominalWalkSpeed": 0.9
+}

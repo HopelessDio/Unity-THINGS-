@@ -1,0 +1,494 @@
+{
+  "materials": [
+    {
+      "id": "H1_Render_00",
+      "source": "Charcoal stone",
+      "color": {
+        "r": 0.055,
+        "g": 0.051,
+        "b": 0.055,
+        "a": 1
+      },
+      "emission": 0
+    },
+    {
+      "id": "H1_Render_01",
+      "source": "Warm aged plaster",
+      "color": {
+        "r": 0.19,
+        "g": 0.135,
+        "b": 0.105,
+        "a": 1
+      },
+      "emission": 0
+    },
+    {
+      "id": "H1_Render_02",
+      "source": "Dark timber",
+      "color": {
+        "r": 0.045,
+        "g": 0.022,
+        "b": 0.014,
+        "a": 1
+      },
+      "emission": 0
+    },
+    {
+      "id": "H1_Render_03",
+      "source": "Warm oak",
+      "color": {
+        "r": 0.13,
+        "g": 0.065,
+        "b": 0.032,
+        "a": 1
+      },
+      "emission": 0
+    },
+    {
+      "id": "H1_Render_04",
+      "source": "Floor oak 0",
+      "color": {
+        "r": 0.092,
+        "g": 0.047,
+        "b": 0.026,
+        "a": 1
+      },
+      "emission": 0
+    },
+    {
+      "id": "H1_Render_05",
+      "source": "Floor oak 1",
+      "color": {
+        "r": 0.104,
+        "g": 0.054,
+        "b": 0.03,
+        "a": 1
+      },
+      "emission": 0
+    },
+    {
+      "id": "H1_Render_06",
+      "source": "Floor oak 2",
+      "color": {
+        "r": 0.11599999999999999,
+        "g": 0.061,
+        "b": 0.034,
+        "a": 1
+      },
+      "emission": 0
+    },
+    {
+      "id": "H1_Render_07",
+      "source": "Burgundy fabric",
+      "color": {
+        "r": 0.19,
+        "g": 0.018,
+        "b": 0.032,
+        "a": 1
+      },
+      "emission": 0
+    },
+    {
+      "id": "H1_Render_08",
+      "source": "Warm linen",
+      "color": {
+        "r": 0.55,
+        "g": 0.43,
+        "b": 0.3,
+        "a": 1
+      },
+      "emission": 0
+    },
+    {
+      "id": "H1_Render_09",
+      "source": "Blackened iron",
+      "color": {
+        "r": 0.025,
+        "g": 0.024,
+        "b": 0.027,
+        "a": 1
+      },
+      "emission": 0
+    },
+    {
+      "id": "H1_Render_10",
+      "source": "Aged brass",
+      "color": {
+        "r": 0.26,
+        "g": 0.13,
+        "b": 0.037,
+        "a": 1
+      },
+      "emission": 0
+    },
+    {
+      "id": "H1_Render_11",
+      "source": "Amber flame",
+      "color": {
+        "r": 0.95,
+        "g": 0.19,
+        "b": 0.024,
+        "a": 1
+      },
+      "emission": 3
+    },
+    {
+      "id": "H1_Render_12",
+      "source": "Crimson window",
+      "color": {
+        "r": 0.22,
+        "g": 0.008,
+        "b": 0.019,
+        "a": 1
+      },
+      "emission": 1.3
+    }
+  ],
+  "boxes": [
+    {
+      "name": "Continuous floor",
+      "center": {
+        "x": 0,
+        "y": -0.12,
+        "z": 0
+      },
+      "size": {
+        "x": 13,
+        "y": 0.24,
+        "z": 11
+      },
+      "layer": "Default"
+    },
+    {
+      "name": "Room boundary",
+      "center": {
+        "x": 0,
+        "y": 1.8,
+        "z": 5.65
+      },
+      "size": {
+        "x": 13.4,
+        "y": 3.6,
+        "z": 0.3
+      },
+      "layer": "ArenaObstacle"
+    },
+    {
+      "name": "Room boundary",
+      "center": {
+        "x": -6.65,
+        "y": 1.8,
+        "z": 0
+      },
+      "size": {
+        "x": 0.3,
+        "y": 3.6,
+        "z": 11.4
+      },
+      "layer": "ArenaObstacle"
+    },
+    {
+      "name": "Room boundary",
+      "center": {
+        "x": 6.65,
+        "y": 1.8,
+        "z": 0
+      },
+      "size": {
+        "x": 0.3,
+        "y": 3.6,
+        "z": 11.4
+      },
+      "layer": "ArenaObstacle"
+    },
+    {
+      "name": "Room boundary",
+      "center": {
+        "x": 0,
+        "y": 1.8,
+        "z": -5.65
+      },
+      "size": {
+        "x": 13.4,
+        "y": 3.6,
+        "z": 0.3
+      },
+      "layer": "ArenaObstacle"
+    },
+    {
+      "name": "Hearth collision",
+      "center": {
+        "x": -5.76,
+        "y": 1.1,
+        "z": 2.55
+      },
+      "size": {
+        "x": 1.15,
+        "y": 2.2,
+        "z": 2.5
+      },
+      "layer": "ArenaObstacle"
+    },
+    {
+      "name": "Dining table",
+      "center": {
+        "x": -0.45,
+        "y": 0.49,
+        "z": 0.55
+      },
+      "size": {
+        "x": 2.8,
+        "y": 0.98,
+        "z": 1.6
+      },
+      "layer": "ArenaObstacle"
+    },
+    {
+      "name": "Dining chair",
+      "center": {
+        "x": -0.45,
+        "y": 0.55,
+        "z": -0.75
+      },
+      "size": {
+        "x": 0.72,
+        "y": 1.1,
+        "z": 0.7
+      },
+      "layer": "ArenaObstacle"
+    },
+    {
+      "name": "Dining chair",
+      "center": {
+        "x": -0.45,
+        "y": 0.55,
+        "z": 1.86
+      },
+      "size": {
+        "x": 0.72,
+        "y": 1.1,
+        "z": 0.7
+      },
+      "layer": "ArenaObstacle"
+    },
+    {
+      "name": "Kitchen cabinet",
+      "center": {
+        "x": 1.35,
+        "y": 0.52,
+        "z": 4.9
+      },
+      "size": {
+        "x": 2.8,
+        "y": 1.04,
+        "z": 0.82
+      },
+      "layer": "ArenaObstacle"
+    },
+    {
+      "name": "Cupboard",
+      "center": {
+        "x": -4.2,
+        "y": 1.04,
+        "z": 4.95
+      },
+      "size": {
+        "x": 1.55,
+        "y": 2.08,
+        "z": 0.73
+      },
+      "layer": "ArenaObstacle"
+    },
+    {
+      "name": "Bed frame",
+      "center": {
+        "x": 4.6,
+        "y": 0.35,
+        "z": 2.8
+      },
+      "size": {
+        "x": 2.0,
+        "y": 0.56,
+        "z": 3.1
+      },
+      "layer": "ArenaObstacle"
+    },
+    {
+      "name": "Bedside chest",
+      "center": {
+        "x": 3.02,
+        "y": 0.44,
+        "z": 3.8
+      },
+      "size": {
+        "x": 0.75,
+        "y": 0.88,
+        "z": 0.75
+      },
+      "layer": "ArenaObstacle"
+    },
+    {
+      "name": "Storage chest",
+      "center": {
+        "x": -4.65,
+        "y": 0.4,
+        "z": -3.75
+      },
+      "size": {
+        "x": 1.85,
+        "y": 0.8,
+        "z": 0.84
+      },
+      "layer": "ArenaObstacle"
+    },
+    {
+      "name": "Writing desk",
+      "center": {
+        "x": 4.55,
+        "y": 0.46,
+        "z": -2.5
+      },
+      "size": {
+        "x": 2.3,
+        "y": 0.92,
+        "z": 0.85
+      },
+      "layer": "ArenaObstacle"
+    },
+    {
+      "name": "Desk stool",
+      "center": {
+        "x": 4.35,
+        "y": 0.4,
+        "z": -1.55
+      },
+      "size": {
+        "x": 0.6,
+        "y": 0.8,
+        "z": 0.6
+      },
+      "layer": "ArenaObstacle"
+    }
+  ],
+  "lamps": [
+    {
+      "name": "Hearth warmth",
+      "position": {
+        "x": -4.98,
+        "y": 1.16,
+        "z": 2.55
+      },
+      "color": {
+        "r": 1,
+        "g": 0.45,
+        "b": 0.18,
+        "a": 1
+      },
+      "intensity": 2.2,
+      "range": 6.5
+    },
+    {
+      "name": "Amber lantern",
+      "position": {
+        "x": 2.7,
+        "y": 1.8,
+        "z": 4.9
+      },
+      "color": {
+        "r": 1,
+        "g": 0.45,
+        "b": 0.18,
+        "a": 1
+      },
+      "intensity": 2.2,
+      "range": 5
+    },
+    {
+      "name": "Amber lantern",
+      "position": {
+        "x": -3.2,
+        "y": 1.8,
+        "z": -4.9
+      },
+      "color": {
+        "r": 1,
+        "g": 0.45,
+        "b": 0.18,
+        "a": 1
+      },
+      "intensity": 2.2,
+      "range": 5
+    }
+  ],
+  "player": {
+    "x": 0,
+    "y": 1.03,
+    "z": -3.6
+  },
+  "mother": {
+    "x": -3.8,
+    "y": 0,
+    "z": 2.55
+  },
+  "motherForward": {
+    "x": 1,
+    "y": 0,
+    "z": -0.5
+  },
+  "camera": {
+    "x": 12,
+    "y": 14,
+    "z": -17
+  },
+  "cameraTarget": {
+    "x": 0,
+    "y": 0.8,
+    "z": 0
+  },
+  "route": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": -3.6
+    },
+    {
+      "x": 1.8,
+      "y": 0,
+      "z": -2.8
+    },
+    {
+      "x": 2.1,
+      "y": 0,
+      "z": -0.5
+    },
+    {
+      "x": 2.1,
+      "y": 0,
+      "z": 1.6
+    },
+    {
+      "x": 1.9,
+      "y": 0,
+      "z": 2.85
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "z": 2.85
+    },
+    {
+      "x": -2.0,
+      "y": 0,
+      "z": 2.85
+    },
+    {
+      "x": -2.8,
+      "y": 0,
+      "z": 2.55
+    }
+  ],
+  "verticalSpan": 13.7,
+  "horizontalSpan": 23.2,
+  "renderBatches": 12,
+  "triangles": 7644
+}
