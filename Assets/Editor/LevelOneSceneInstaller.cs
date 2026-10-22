@@ -136,6 +136,8 @@ namespace Survivor.EditorTools
             camera.nearClipPlane=.1f; camera.farClipPlane=1000; camera.allowHDR=true;
             var extra=camera.GetUniversalAdditionalCameraData(); extra.renderPostProcessing=true;
             extra.renderShadows=true;
+            extra.antialiasing=AntialiasingMode.SubpixelMorphologicalAntiAliasing;
+            extra.antialiasingQuality=AntialiasingQuality.High;
             var backdrop=CreateBackdrop(camera);
             var follow=camera.GetComponent<LevelOneCamera>(); if(follow==null) follow=camera.gameObject.AddComponent<LevelOneCamera>();
             follow.enabled=true;

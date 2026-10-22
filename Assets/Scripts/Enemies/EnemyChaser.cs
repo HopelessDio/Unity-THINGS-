@@ -11,6 +11,7 @@ namespace Survivor.Enemies
         [Header("Movement")]
         [SerializeField, Min(0f)] private float moveSpeed = 3f;
         [SerializeField, Min(0f)] private float rotationSpeed = 10f;
+        [SerializeField, Min(1f)] private float maximumTurnSpeed = 240f;
         [SerializeField, Min(0f)] private float stoppingDistance = 1f;
 
         [Header("Obstacle Steering")]
@@ -20,6 +21,8 @@ namespace Survivor.Enemies
         [SerializeField, Min(0.1f)] private float turnCommitmentTime = 0.6f;
 
         private Rigidbody body;
+        private bool attackPaused;
+        public void SetAttackPaused(bool value) => attackPaused = value;
         private Vector3 knockbackVelocity;
         private float knockbackTimeRemaining;
         private float avoidanceDirection = 1f;
@@ -31,6 +34,10 @@ namespace Survivor.Enemies
         private void Awake()
         {
             body = GetComponent<Rigidbody>();
+            // Collision impulses must not compete with the scripted facing, including yaw.
+            // Explicit MoveRotation still supplies the controlled turn.
+            body.constraints |= RigidbodyConstraints.FreezeRotation;
+            body.angularVelocity = Vector3.zero;
             avoidanceDirection = Random.value < 0.5f ? -1f : 1f;
         }
 
@@ -68,6 +75,7 @@ namespace Survivor.Enemies
 
         private void FixedUpdate()
         {
+            body.angularVelocity = Vector3.zero;
             if (Time.time < hazardEscapeUntil)
             {
                 Vector3 hazardCurrentVelocity = body.linearVelocity;
@@ -95,7 +103,7 @@ namespace Survivor.Enemies
                 return;
             }
 
-            if (target == null)
+            if (attackPaused || target == null)
             {
                 StopMoving();
                 return;
@@ -123,7 +131,7 @@ namespace Survivor.Enemies
                 targetRotation,
                 rotationSpeed * Time.fixedDeltaTime);
 
-            body.MoveRotation(nextRotation);
+            body.MoveRotation(Quaternion.RotateTowards(body.rotation, nextRotation, maximumTurnSpeed * Time.fixedDeltaTime));
         }
 
         private void StopMoving()

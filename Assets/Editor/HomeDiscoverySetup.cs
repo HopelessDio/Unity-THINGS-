@@ -60,47 +60,65 @@ namespace Survivor.EditorTools
             PrefabUtility.UnpackPrefabInstance(zombie, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             zombie.name = "FeedingZombie";
             zombie.transform.SetParent(root.transform, false);
-            zombie.transform.SetPositionAndRotation(C(-3.15f, 1.08f, 1.35f), Quaternion.LookRotation(az.normalized, ay.normalized));
+            zombie.transform.SetPositionAndRotation(C(-3.15f, 1.08f, 1.85f), Quaternion.LookRotation(az.normalized, ay.normalized));
             SampleIdle(zombie);
             var animator = zombie.GetComponentInChildren<Animator>();
             var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
             var lf = animator.GetBoneTransform(HumanBodyBones.LeftFoot).position;
             var rf = animator.GetBoneTransform(HumanBodyBones.RightFoot).position;
+            var head = animator.GetBoneTransform(HumanBodyBones.Head);
+            Quaternion headForwardOffset = Quaternion.Inverse(Quaternion.LookRotation(zombie.transform.forward, Vector3.up)) * head.rotation;
+            var mouth = new GameObject("Feeding_MouthAnchor").transform;
+            mouth.position = head.position + Vector3.up * .12f + zombie.transform.forward * .105f;
+            mouth.SetParent(head, true);
             animator.enabled = false;
-            hips.position -= Vector3.up * .62f;
-            RotateWorld(animator.GetBoneTransform(HumanBodyBones.Spine), zombie.transform.right, 42);
-            RotateWorld(animator.GetBoneTransform(HumanBodyBones.Chest), zombie.transform.right, 15);
-            RotateWorld(animator.GetBoneTransform(HumanBodyBones.Neck), zombie.transform.right, -10);
+            hips.position -= Vector3.up * .76f;
+            RotateWorld(animator.GetBoneTransform(HumanBodyBones.Spine), zombie.transform.right, 62);
+            RotateWorld(animator.GetBoneTransform(HumanBodyBones.Chest), zombie.transform.right, 20);
+            RotateWorld(animator.GetBoneTransform(HumanBodyBones.Neck), zombie.transform.right, -6);
+            var contact = new GameObject("Feeding_ContactTarget").transform;
+            contact.SetParent(root.transform, false);
+            contact.position = C(-3.15f, .42f, 2.65f);
+            hips.position += contact.position - mouth.position;
             Solve(animator, HumanBodyBones.LeftUpperLeg, HumanBodyBones.LeftLowerLeg, HumanBodyBones.LeftFoot, lf, zombie.transform.forward);
             Solve(animator, HumanBodyBones.RightUpperLeg, HumanBodyBones.RightLowerLeg, HumanBodyBones.RightFoot, rf, zombie.transform.forward);
-            Vector3 floor = C(-3.15f, 0, 1.35f);
             Solve(animator, HumanBodyBones.LeftUpperArm, HumanBodyBones.LeftLowerArm, HumanBodyBones.LeftHand,
-                floor + zombie.transform.forward * .65f + Vector3.up * .35f - zombie.transform.right * .22f, -zombie.transform.right);
+                contact.position - zombie.transform.right * .29f - zombie.transform.forward * .08f, -zombie.transform.right);
             Solve(animator, HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm, HumanBodyBones.RightHand,
-                floor + zombie.transform.forward * .65f + Vector3.up * .35f + zombie.transform.right * .22f, zombie.transform.right);
+                contact.position + zombie.transform.right * .29f - zombie.transform.forward * .08f, zombie.transform.right);
             // Visual-only staging: no pursuit, damage, score event, solid capsule or gravity.
             UnityEngine.Object.DestroyImmediate(zombie.GetComponent<AshboundZombie>());
             foreach (var behaviour in zombie.GetComponents<MonoBehaviour>()) UnityEngine.Object.DestroyImmediate(behaviour);
             foreach (var collider in zombie.GetComponentsInChildren<Collider>()) UnityEngine.Object.DestroyImmediate(collider);
             foreach (var body in zombie.GetComponentsInChildren<Rigidbody>()) UnityEngine.Object.DestroyImmediate(body);
-            zombie.AddComponent<FeedingZombiePose>().Configure(animator.GetBoneTransform(HumanBodyBones.Head),
-                animator.GetBoneTransform(HumanBodyBones.Neck), animator.GetBoneTransform(HumanBodyBones.LeftUpperArm),
-                animator.GetBoneTransform(HumanBodyBones.RightUpperArm));
+            Transform[] Chain(HumanBodyBones a, HumanBodyBones b, HumanBodyBones c) => new[]
+                { animator.GetBoneTransform(a), animator.GetBoneTransform(b), animator.GetBoneTransform(c) };
+            var feeding = zombie.AddComponent<FeedingZombiePose>();
+            feeding.Configure(hips, animator.GetBoneTransform(HumanBodyBones.Spine), animator.GetBoneTransform(HumanBodyBones.Chest),
+                head, mouth, contact,
+                Chain(HumanBodyBones.LeftUpperLeg, HumanBodyBones.LeftLowerLeg, HumanBodyBones.LeftFoot),
+                Chain(HumanBodyBones.RightUpperLeg, HumanBodyBones.RightLowerLeg, HumanBodyBones.RightFoot),
+                Chain(HumanBodyBones.LeftUpperArm, HumanBodyBones.LeftLowerArm, HumanBodyBones.LeftHand),
+                Chain(HumanBodyBones.RightUpperArm, HumanBodyBones.RightLowerArm, HumanBodyBones.RightHand));
+            var playerHealth = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<PlayerHealth>(true)).Single();
+            zombie.AddComponent<ZombieNoticePlayer>().Configure(feeding, animator.GetBoneTransform(HumanBodyBones.Spine),
+                animator.GetBoneTransform(HumanBodyBones.Chest), animator.GetBoneTransform(HumanBodyBones.Neck), head,
+                headForwardOffset, playerHealth);
             // Remove the stage copy's Animator so it cannot rebind the saved crouch on load.
             // The normal reusable combat prefab retains its Humanoid Animator unchanged.
             UnityEngine.Object.DestroyImmediate(animator);
-            // A restrained flat stain reads from the gameplay camera; no detailed gore.
-            string stainPath = "Assets/Materials/HomeInterior/DiscoveryBlood.mat";
-            var material = AssetDatabase.LoadAssetAtPath<Material>(stainPath);
-            if (material == null) { material = new Material(Shader.Find("Universal Render Pipeline/Lit")); AssetDatabase.CreateAsset(material, stainPath); }
-            material.SetColor("_BaseColor", new Color(.13f, .006f, .012f));
-            material.SetFloat("_Smoothness", .35f);
-            var stain = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            stain.name = "Restrained blood pool"; stain.transform.SetParent(root.transform, false);
-            stain.transform.position = C(-3.15f, .008f, 2.65f);
-            stain.transform.localScale = new Vector3(1.35f, .004f, .8f);
-            UnityEngine.Object.DestroyImmediate(stain.GetComponent<Collider>());
-            stain.GetComponent<Renderer>().sharedMaterial = material;
+            feeding.Evaluate(0);
+            var combat = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(AshboundZombieSetup.PrefabPath), scene);
+            combat.name = "HomeEncounterZombie";
+            combat.transform.SetParent(root.transform, false);
+            combat.transform.SetPositionAndRotation(zombie.transform.position, zombie.transform.rotation);
+            SampleIdle(combat);
+            var standing = combat.GetComponentsInChildren<Transform>(true).ToDictionary(t => t.name);
+            var staged = zombie.GetComponentsInChildren<Transform>(true).Where(t => t != zombie.transform && standing.ContainsKey(t.name)).ToArray();
+            zombie.AddComponent<ZombieRiseEncounter>().Configure(zombie.GetComponent<ZombieNoticePlayer>(), feeding, playerHealth, combat,
+                staged, staged.Select(t => standing[t.name].localPosition).ToArray(), staged.Select(t => standing[t.name].localRotation).ToArray());
+            combat.SetActive(false); // No enemy collider, damage or AI until the stand-up finishes.
+            HomeBloodDressing.Build(root.transform, C, ax, az);
             Physics.SyncTransforms();
             Validate(scene, mother, zombie);
             AssetDatabase.SaveAssets();
@@ -108,7 +126,7 @@ namespace Survivor.EditorTools
             EditorSceneManager.SaveScene(scene);
             if (Hash(HomeDoorSetup.Outside) != outdoorHash) throw new InvalidOperationException("Outdoor scene unexpectedly changed.");
             Selection.activeGameObject = root;
-            Debug.Log("HOME DISCOVERY SETUP PASS: separate static mother pose, crouched visual-only feeding zombie, restrained stain; living mother/enemy prefabs preserved; interior backed up; outdoor unchanged. Reveal trigger/combat not implemented yet.");
+            Debug.Log("HOME DISCOVERY SETUP PASS: mouth-to-body feeding contact, braced hands/grounded feet, dip/hold/pull loop, irregular blood pool and room stains; living mother/enemy prefabs preserved; interior backed up; outdoor unchanged. Combat remains disabled.");
         }
         private static void BuildMotherPose()
         {

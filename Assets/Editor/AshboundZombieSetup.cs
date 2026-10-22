@@ -87,7 +87,7 @@ namespace Survivor.EditorTools
                 var body = root.AddComponent<Rigidbody>();
                 body.mass = 1.3f;
                 body.interpolation = RigidbodyInterpolation.Interpolate;
-                body.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+                body.constraints = RigidbodyConstraints.FreezeRotation;
                 body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
                 var capsule = root.AddComponent<CapsuleCollider>();
                 capsule.height = 2.16f;

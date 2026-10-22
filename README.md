@@ -129,4 +129,4 @@ The arena will use modular 3D prefabs rather than a Tilemap.
 
 ## Current next step
 
-Add the home discovery reaction: briefly frame the mother and feeding zombie, play the protagonist's reaction, then have the zombie notice him and hand off to the first combat encounter. The door, static mother pose and visual-only feeding loop are already staged; cinematic timing, sound and the combat handoff remain.
+Polish the home discovery with camera framing and the protagonist's reaction, then refine sound and the first-fight feel. The door, mother pose, blood dressing, feeding loop, smooth head turn, stare, stand-up and first combat handoff are connected. The stand-up uses a temporary synthesized growl; pursuit, contact damage, enemy death and Retry have passed live tests.

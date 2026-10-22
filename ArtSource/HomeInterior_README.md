@@ -1,13 +1,13 @@
 # Level 1 house interior
 
 Scene: `Assets/Scenes/Level01_HomeInterior.unity`.
-Native editable source: `ArtSource/HomeInterior01.blend`.
-Builder: `ArtSource/Scripts/create_home_interior.py` (Blender background Python).
+Current native editable source: `ArtSource/HomeInterior02_CombatOpen.blend`.
+Builders: `ArtSource/Scripts/create_home_interior.py` preserves the furnished original; `ArtSource/Scripts/open_home_combat_layout.py` derives the open combat variant from it (Blender background Python).
 Static export/layout: `Assets/Models/Levels/HomeInterior/`.
 
-The cutaway room has a hearth, mother beside the fire, dining table/chairs, kitchen counter and shelf, cupboard, bed, writing desk, chest, burgundy rug and crimson windows. The far walls are visible; the roof and near walls are cut away for the isometric camera. Full invisible wall collision still contains the player.
+The cutaway room has a hearth, mother beside the fire, kitchen counter and shelf, cupboard, perimeter bed/desk/chests, burgundy rug and crimson windows. The central dining table/chairs and desk stool have been removed from the combat variant. The far walls are visible; the roof and near walls are cut away for the isometric camera. Full invisible wall collision still contains the player.
 
-The open room is approximately 13 x 11 metres, scaled for the existing 2m player and 1.7m mother. It is a separate playable level, not an image pasted behind the camera. The current discovery staging places the mother on the floor beside a feeding zombie; dialogue, cinematic reaction and the first combat encounter are not connected yet.
+The open room is approximately 13 x 11 metres, scaled for the existing 2m player and 1.7m mother. It is a separate playable level, not an image pasted behind the camera. The zombie feeds, notices the player, stares, rises and becomes the first combat enemy. Dialogue and the protagonist's cinematic reaction are not connected yet.
 
 ## Gameplay and scope
 
@@ -16,7 +16,7 @@ The open room is approximately 13 x 11 metres, scaled for the existing 2m player
 - Continuous floor collision, simple furniture obstacles, and an open walking route to the mother.
 - Existing health/dash UI and Retry wiring copied as a scene, avoiding broken cross-scene player references.
 - Mother uses a separate static resting-pose prefab; the original living Humanoid prefab is preserved.
-- One visual-only feeding zombie, with no combat AI or damage; no enemy spawner.
+- One visual-only feeding/reveal actor, handing off to exactly one combat zombie after standing; no enemy spawner.
 - The exterior `Game.unity` is preserved. The builder verifies its file hash remains unchanged.
 - The home is appended to Build Settings so Retry can reload it by name. The outdoor level remains first/default.
 
@@ -28,9 +28,13 @@ Start in `Assets/Scenes/Game.unity`, follow the path to the family home, approac
 
 ## Discovery staging (2026-10-20)
 
-The current interior now contains `Home_Discovery`: the mother lying beside the hearth, a crouched zombie with a subtle feeding loop, and a small dark blood stain. This is visual staging only: no player reaction, reveal camera, sound, zombie awakening or combat trigger has been connected yet. The original `VillageMother.prefab`, its living animations, and `AshboundZombie.prefab` remain unchanged.
+The current interior contains `Home_Discovery`: the mother lying beside the hearth, a grounded feeding loop, delayed player-facing head turn, stare, stand-up and first combat handoff, plus blood dressing. The protagonist's reaction, reveal camera and final recorded audio are still pending. The original `VillageMother.prefab`, its living animations, and `AshboundZombie.prefab` remain unchanged.
 
-`MotherResting.prefab` uses `MotherRestingPose.asset`, a derived static mesh baked from the original mother in a relaxed asymmetrical pose. It retains the original one-material palette and vertex count but needs no skeleton/Animator at runtime. The staged zombie is an unpacked copy of the existing model with its combat components, colliders, Rigidbody and Animator removed; `FeedingZombiePose` gently animates the authored crouch's head/neck/arms. It cannot chase, damage the player or award a kill yet. The normal enemy prefab remains fully rigged and combat-ready for a later reaction-to-combat handoff.
+`MotherResting.prefab` uses `MotherRestingPose.asset`, a derived static mesh baked from the original mother in a relaxed asymmetrical pose. It retains the original one-material palette and vertex count but needs no skeleton/Animator at runtime. The staged zombie is an unpacked copy of the existing model with its combat components, colliders, Rigidbody and Animator removed. `FeedingZombiePose` uses a 2.8-second dip/contact/hold/pull-back cycle, a mouth contact anchor on the torso, small head/upper-body motions and two-bone IK to keep hands braced and feet grounded. Every sample restores its authored rest pose first, avoiding accumulated drift. The actor/target remain stationary in this tableau; rerun setup after changing their relative placement. It cannot chase, damage the player or award a kill yet. The normal enemy prefab remains fully rigged and combat-ready for a later reaction-to-combat handoff.
+
+Blood dressing is generated by `HomeBloodDressing`: one shared 26-triangle irregular stain mesh, two shared dark/fresh Lit materials and no textures or colliders. Layered stains sit at slightly different heights to avoid coplanar flicker. The pool surrounds the body, while broken smears, small droplets, partial footprints and hearth flecks suggest struggle without changing furniture collision, room lighting or the clear entry route. No exposed organs or dismemberment are added.
+
+Updated and tested on 2026-10-22: 57 samples across the complete feeding cycle kept the mouth 0.015–0.190m from its contact target, with stable feet/braced hands; runtime crouch/floor bounds, non-colliding blood dressing and actual Retry passed. `HomeDiscovery_Unity01.png` is the refreshed actual Play-mode preview. The earlier subtle nod and single cylinder stain have been replaced.
 
 Use **Survivor > Levels > Stage Home Discovery** only with saved scenes and Play mode stopped. It backs up the existing interior under `Assets/Scenes/Backups/HomeInterior_BeforeDiscovery_*`, rebuilds only its generated tableau and replaces the scene's standing mother. The outdoor scene is hash-checked and untouched. Running the original full interior builder would restore the original living-mother layout; do not use it to update this tableau.
 
@@ -38,9 +42,39 @@ Actual current preview: `ArtSource/Previews/HomeDiscovery_Unity01.png`. `HomeDis
 
 Final discovery Play validation and outdoor-door-to-discovery/Retry regression both passed on 2026-10-20. Pose baking forces offscreen Animator evaluation, corrects mirrored FBX triangle winding, and uses yaw-only placement so the resting mesh cannot be flipped underneath the floor. The simulated-keyboard door test lets device/focus synchronization settle before issuing E.
 
+### Delayed notice reaction (2026-10-22)
+
+`ZombieNoticePlayer` lets the feeding loop run for four seconds after the interior loads, then freezes that loop and blends into an over-shoulder head/upper-body turn over 1.4 seconds. It targets the actual player's upper body using a calibrated neutral head orientation, not a fixed world direction. The torso/chest/neck share the turn so only the head is not forced to rotate all the way backward. It stays crouched and watches; it does not stand, pursue, attack or damage the player. Pausing stops the timer and Retry creates a fresh feeding/notice sequence. Tune `Notice Delay` and `Turn Duration` on `FeedingZombie`'s notice component.
+
+The runtime component runs after the feeding pose, resets from the frozen authored pose each frame and applies its reaction once without accumulating rotations. Source living/enemy prefabs remain unchanged. The installer backs up and updates only the discovery tableau. `HomeDiscoveryPlayValidation` passed: no early reaction, final gaze aligned toward the player, no combat enabled and actual Retry resets the delay. The test waits for completed game-time animation rather than assuming editor rendering keeps up with wall time. Watching preview: `ArtSource/Previews/HomeDiscovery_Notice_Unity01.png`.
+
+### Stand-up and first fight (2026-10-22)
+
+`ZombieRiseEncounter` runs after the notice pose. It waits for the head turn to finish, holds a one-second stare, captures the current pose and blends all matched rig transforms into the normal zombie's sampled idle over 1.6 seconds. Root facing also eases toward the player's position at the start of the rise. The feeding/notice drivers stop while rising so they cannot overwrite this pose. A short original synthesized growl is a temporary audio placeholder, not recorded creature audio.
+
+`HomeEncounterZombie` is a separate inactive instance of the existing enemy prefab. Until the rise completes it has no active colliders, damage, AI or rendering. On completion the staging actor is hidden, the combat instance is activated at the same position/facing, its Animator is evaluated immediately to avoid a T-pose frame, and it receives the current player target. It retains the existing 30 health, 1.2m/s chase, 10 contact damage, hit flash and kill/knockback systems. There is no separate melee attack clip yet; damage is contact-based. Player controls remain available throughout. Retry reloads the active feeding actor and inactive combat instance; the normal source prefab is not edited.
+
+`HomeEncounterPlayValidation` passed the real timeline with no reveal damage, one enemy after standing, pursuit from the original start around furniture, live collision damage, two 15-damage health hits producing one kill, enemy removal and actual death/Retry reset. The feeding/head-tracking fixture disables only the rise component during its isolated regression so it can still exercise a long look-around sweep. Actual previews: `HomeDiscovery_Rising_Unity01.png` and `HomeDiscovery_Combat_Unity01.png` under `ArtSource/Previews/`.
+
+### Open combat layout (2026-10-22)
+
+The current room uses `HomeInterior_CombatOpen.fbx` and `HomeInterior_CombatOpen_Layout.json`. The centre is clear: the dining set, tabletop items and desk stool are absent; the bed moves to the far/right corner; the desk rotates along the side wall; the bedside/storage chests move to perimeter positions. Original furnished `HomeInterior01.blend`, `HomeInterior.fbx` and layout JSON remain intact.
+
+**Survivor > Levels > Open Up Home Combat Layout** backs up the saved interior, replaces only `RoomGeometry` and its generated `RoomCollisions`, reuses the exact existing materials and preserves the entire discovery/encounter hierarchy, lighting, camera and UI. It validates 63 player-sized capsule/floor samples across a 7m x 4.7m central area plus eight full 2.88m dash-length capsule casts. Colliders match relocated furniture; no invisible dining-chair/table obstacles remain. The normal full room builder now points to this open variant too, although it still resets the original living-mother layout as documented above.
+
+Current environment: 12 material batches, 6,756 triangles, 12 collision boxes (down from 16). These changes address space, not enemy navigation logic; surviving perimeter furniture remains solid. The outdoor scene is hash-checked and unchanged. The full live encounter regression passed again in this open layout: reveal, stand-up, approach to the starting player, collision damage, death and actual Retry. Actual updated preview: `ArtSource/Previews/HomeDiscovery_Combat_Unity01.png`.
+
 ### Base room optimization
 
-Environment: 12 static material batches, 7,644 triangles and 16 simple collision boxes. The many planks/furniture details are combined for rendering rather than separate runtime renderers; individual pieces remain editable in Blender. No dense mesh colliders, realtime cloth, moving furniture, or imported Blender preview character is included in the environment FBX. Mother/player are separate Unity actors. Three warm point lights do not cast shadows; the room has one soft directional shadow light and restrained post-processing.
+### Interrupted cutscene draft (2026-10-22)
+
+The latest cutscene request is **not implemented yet**. `ZombieMeleeAttack.cs` is a draft raised-arm/claw-swipe overlay with wind-up, a committed hit direction, timed damage and recovery; it is not attached to the home enemy. `EnemyChaser.SetAttackPaused` and `ZombieNoticePlayer.ReactNow` are hooks for the upcoming sequence and remain unused by the saved scene. `Assets/Audio/Story/Mother_Run_Placeholder.wav` is a temporary generic Microsoft Zira system-voice line, not a performed whisper. Camera direction, subtitles, the mother's dialogue playback, player-control locking/unlocking and the attack handoff still need implementation and end-to-end testing. The saved scene retains the previously tested feeding/notice/rise/contact-damage fight. Do not mistake these draft assets for a completed cutscene.
+
+Dash-impact rotation fix (2026-10-22): `EnemyChaser` now locks physics rotation on all axes, clears residual angular velocity and limits its explicit facing changes to 240 degrees/second while retaining the existing smooth steering response. The reusable zombie prefab and builder also store the all-axis rotation lock. Collision impulses can still move the body, and sword knockback still works; only uncontrolled physical spin is removed. `EnemyDashSpinValidation` passed three real Space dashes with 28 glancing contact callbacks, maximum scripted yaw step 4.8 degrees at 50Hz, zero measured residual angular velocity and preserved linear knockback. Its transient fixed-step probe is editor-only and excluded from player builds.
+
+Tracking fix (2026-10-22): rear-angle continuity and shoulder hysteresis prevent the +/-180-degree boundary from instantly swapping torso direction. Torso yaw is damped and speed-limited throughout tracking, not only during the initial reveal. The calibrated head orientation is also speed-limited, with relative yaw/pitch limits so targets beyond its safe arc wait for the upper body. A wide circle can trigger a smooth shoulder change rather than leaving the gaze stuck on the wrong side. Regression passed 1,470 fixed-step runtime samples across both rear seams, sideways/front reversals and target reacquisition; the largest tested bone rotation step was 3 degrees at 60Hz. Delay, feeding, blood dressing and actual Retry also passed. Runtime actor/player transforms used for testing were restored without saving scene changes.
+
+Original furnished environment (preserved): 12 static material batches, 7,644 triangles and 16 simple collision boxes. The current open variant has 6,756 triangles and 12 boxes, as above. Planks/furniture details are combined for rendering; individual pieces remain editable in Blender. No dense mesh colliders, realtime cloth, moving furniture, or imported Blender preview character is included in the environment FBX. Mother/player are separate Unity actors. Three warm point lights do not cast shadows; the room has one soft directional shadow light and restrained post-processing.
 
 This is a prototype room with flat-color materials and native geometry, not a promise of a particular FPS. Actual cost depends on resolution, shadows, pipeline and hardware.
 

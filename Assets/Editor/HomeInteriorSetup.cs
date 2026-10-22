@@ -22,8 +22,8 @@ namespace Survivor.EditorTools
     {
         public const string ScenePath = "Assets/Scenes/Level01_HomeInterior.unity";
         private const string Pending = "Assets/Editor/HomeInteriorSetup.pending";
-        private const string Model = "Assets/Models/Levels/HomeInterior/HomeInterior.fbx";
-        private const string LayoutPath = "Assets/Models/Levels/HomeInterior/HomeInterior_Layout.json";
+        private const string Model = "Assets/Models/Levels/HomeInterior/HomeInterior_CombatOpen.fbx";
+        private const string LayoutPath = "Assets/Models/Levels/HomeInterior/HomeInterior_CombatOpen_Layout.json";
         private const string MaterialFolder = "Assets/Materials/HomeInterior";
         private const string RootName = "HomeInterior_Environment";
         [Serializable] public class Surface { public string id,source; public Color color; public float emission; }
@@ -163,6 +163,8 @@ namespace Survivor.EditorTools
             camera.allowHDR = true;
             var additional = camera.GetUniversalAdditionalCameraData();
             additional.renderPostProcessing = true;
+            additional.antialiasing = AntialiasingMode.SubpixelMorphologicalAntiAliasing;
+            additional.antialiasingQuality = AntialiasingQuality.High;
             additional.renderShadows = true;
             var roomView = camera.GetComponent<RoomCamera>();
             if (roomView == null) roomView = camera.gameObject.AddComponent<RoomCamera>();
